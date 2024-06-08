@@ -13,10 +13,6 @@ export const formSchema = z
 		avatar: z
 			.any()
 			.refine((f) => {
-				console.log(f);
-				return true;
-			})
-			.refine((f) => {
 				if (f instanceof File) {
 					return true;
 				}
@@ -33,7 +29,7 @@ export const formSchema = z
 					return PUBLIC_ACCEPTED_IMAGE_TYPES.includes(f.type);
 				}
 				return PUBLIC_ACCEPTED_IMAGE_TYPES.includes(f[0].type);
-			}, 'Only .jpg, .jpeg, .png .gif .webp and .avif files are accepted.')
+			}, 'Only .jpg, .jpeg, .png, .svg, .gif, .webp and .avif files are accepted.')
 			.optional(),
 		oldPassword: z.string().optional(),
 		password: z.string().min(8, 'Password must be at least 8 characters long').optional(),

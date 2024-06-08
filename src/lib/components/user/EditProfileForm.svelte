@@ -56,7 +56,11 @@
 	<Form.Field {form} name="avatar">
 		<Form.Control let:attrs>
 			<Form.Label>Avatar</Form.Label>
-			<FileInput {...attrs} bind:files={$formData.avatar} />
+			<FileInput
+				{...attrs}
+				bind:files={$formData.avatar}
+				accept="image/jpeg,image/png,image/svg+xml,image/gif,image/webp,image/avif"
+			/>
 		</Form.Control>
 		<Form.FieldErrors />
 	</Form.Field>
