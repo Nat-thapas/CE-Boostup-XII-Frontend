@@ -9,7 +9,17 @@
 		"@ianvs/prettier-plugin-sort-imports"
 	],
 	"overrides": [{ "files": "*.svelte", "options": { "parser": "svelte" } }],
-	"importOrder": ["<BUILTIN_MODULES>", "", "<THIRD_PARTY_MODULES>", "", "^$lib/(.*)$", "", "^\\."],
+	"importOrder": [
+		"<BUILTIN_MODULES>",
+		"",
+		"<THIRD_PARTY_MODULES>",
+		"",
+		"^\\$(?!lib)",
+		"",
+		"^\\$lib",
+		"",
+		"^\\."
+	],
 	"importOrderParserPlugins": ["typescript", "jsx", "decorators-legacy"],
 	"importOrderTypeScriptVersion": "5.4.5"
 }
