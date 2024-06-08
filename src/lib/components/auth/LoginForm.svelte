@@ -33,9 +33,9 @@
 	<Form.Field {form} name="password">
 		<Form.Control let:attrs>
 			<Form.Label>Password</Form.Label>
-			<Input {...attrs} bind:value={$formData.password} />
+			<Input {...attrs} type="password" bind:value={$formData.password} />
 		</Form.Control>
 		<Form.FieldErrors />
 	</Form.Field>
-	<Form.Button>Submit</Form.Button>
+	<Form.Button class="mt-4 w-full">Submit</Form.Button>
 </form>

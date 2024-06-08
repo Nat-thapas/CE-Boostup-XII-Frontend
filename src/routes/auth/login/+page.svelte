@@ -2,8 +2,9 @@
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
+	import LoginForm from '$lib/components/auth/LoginForm.svelte';
+
 	import type { PageData } from './$types';
-	import LoginForm from './LoginForm.svelte';
 
 	export let data: PageData;
 
@@ -14,6 +15,14 @@
 	});
 </script>
 
-<div class="mx-auto w-96">
+<div
+	class="mx-auto mt-8 w-96 rounded-lg bg-neutral-50 p-4 drop-shadow-lg dark:border dark:bg-background dark:drop-shadow-none"
+>
+	<div class="mb-4 w-full text-center">
+		<h1 class="text-2xl font-bold">Login</h1>
+	</div>
 	<LoginForm data={{ form: data.form, next: data.next }} />
+	<a href="/auth/register" class="mt-4 block text-center text-sm text-blue-500"
+		>Don't have an account? Register here</a
+	>
 </div>

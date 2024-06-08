@@ -3,14 +3,15 @@ import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import { PUBLIC_API_URL } from '$env/static/public';
 
+import type { User } from '$lib/intefaces/User.interface';
 import { parseCookies } from '$lib/parse-cookies';
 
 export async function handle({ event, resolve }) {
 	const cookie = event.request.headers.get('cookie');
 	const token = cookie ? parseCookies(cookie).token ?? '' : '';
 
-	event.locals.user = null;
-	event.locals.token = token;
+	let user: User | null = null;
+	event.locals.token = '';
 
 	if (token) {
 		const response = await fetch(`${PUBLIC_API_URL}/users/me`, {
@@ -19,16 +20,19 @@ export async function handle({ event, resolve }) {
 			}
 		});
 		if (response.ok) {
-			event.locals.user = await response.json();
+			user = await response.json();
+			event.locals.token = token;
 		}
 	}
 
-	if (!event.locals.user?.id && !event.url.pathname.startsWith(`${base}/auth`)) {
+	if (!user?.id && !event.url.pathname.startsWith(`${base}/auth`)) {
 		throw redirect(
 			303,
 			`${base}/auth/login?next=${encodeURIComponent(event.url.pathname + event.url.search)}&reason=${encodeURIComponent('You need to login to access this page.')}`
 		);
 	}
+
+	event.locals.user = user as User;
 
 	const response = await resolve(event);
 
