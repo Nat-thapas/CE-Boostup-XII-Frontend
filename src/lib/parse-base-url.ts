@@ -1,10 +1,10 @@
-export function parseBaseUrl(pageUrl: string, baseUrl: string): string {
-	if (baseUrl.startsWith('..')) {
+export function parseBaseUrl(pathname: string, base: string): string {
+	if (base.startsWith('..')) {
 		throw new Error('Base URL cannot go up a directory');
 	}
-	return baseUrl.startsWith('/')
-		? baseUrl
-		: baseUrl.startsWith('.')
-			? `${pageUrl}${baseUrl.slice(1)}`
-			: `${pageUrl}/${baseUrl}`;
+	return base.startsWith('/')
+		? base
+		: base.startsWith('.')
+			? `${pathname}${base.slice(1)}`
+			: `${pathname}/${base}`;
 }

@@ -46,7 +46,11 @@
 	</div>
 </nav>
 
-<EditProfile bind:open={editProfileSheetOpen} />
+<EditProfile
+	bind:open={editProfileSheetOpen}
+	bind:form={data.editProfileForm}
+	bind:user={data.user}
+/>
 
 <Separator />
 

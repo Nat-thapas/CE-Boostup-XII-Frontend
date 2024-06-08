@@ -1,5 +1,5 @@
 export enum CompletionStatus {
-  Unattempted = 'Unattempted',
-  Attempted = 'Attempted',
-  Solved = 'Solved',
+	Unattempted = 'Unattempted',
+	Attempted = 'Attempted',
+	Solved = 'Solved'
 }

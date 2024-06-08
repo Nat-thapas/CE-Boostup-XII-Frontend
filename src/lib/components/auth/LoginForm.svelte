@@ -37,5 +37,5 @@
 		</Form.Control>
 		<Form.FieldErrors />
 	</Form.Field>
-	<Form.Button class="mt-4 w-full">Submit</Form.Button>
+	<Form.Button class="mt-4 w-full">Login</Form.Button>
 </form>

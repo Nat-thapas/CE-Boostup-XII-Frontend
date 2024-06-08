@@ -2,6 +2,8 @@
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
+	import { base } from '$app/paths';
+
 	import LoginForm from '$lib/components/auth/LoginForm.svelte';
 
 	import type { PageData } from './$types';
@@ -22,7 +24,7 @@
 		<h1 class="text-2xl font-bold">Login</h1>
 	</div>
 	<LoginForm data={{ form: data.form, next: data.next }} />
-	<a href="/auth/register" class="mt-4 block text-center text-sm text-blue-500"
+	<a href="{base}/auth/register" class="mt-4 block text-center text-sm text-blue-500"
 		>Don't have an account? Register here</a
 	>
 </div>

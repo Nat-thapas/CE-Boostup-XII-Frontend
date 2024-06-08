@@ -3,7 +3,7 @@ import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import { PUBLIC_API_URL } from '$env/static/public';
 
-import type { User } from '$lib/intefaces/User.interface';
+import type { User } from '$lib/intefaces/user.interface';
 import { parseCookies } from '$lib/parse-cookies';
 
 export async function handle({ event, resolve }) {
