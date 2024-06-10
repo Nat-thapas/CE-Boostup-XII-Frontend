@@ -29,9 +29,23 @@
 				.join(' '),
 			href: `${base}/${pathname
 				.split('/')
-				.slice(1, i + 1)
+				.slice(1, i + 2)
 				.join('/')}`
 		}));
+
+	$: console.log(
+		'actualpathname:',
+		$page.url.pathname,
+		'actualbaseurl:',
+		base,
+		'pathname:',
+		pathname,
+		'baseurl:',
+		baseUrl,
+		'currentpagename:',
+		currentPageName,
+		items
+	);
 </script>
 
 <Breadcrumb.Root class={className}>
@@ -42,8 +56,6 @@
 					>CE Boostup XII</Breadcrumb.Link
 				>
 			</Breadcrumb.Item>
-		{/if}
-		{#if items.length > 0}
 			<Breadcrumb.Separator />
 		{/if}
 		{#each items as { href, name }}

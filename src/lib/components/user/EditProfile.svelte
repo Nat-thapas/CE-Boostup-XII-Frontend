@@ -10,6 +10,12 @@
 	export let open: boolean;
 	export let form: SuperValidated<Infer<FormSchema>>;
 	export let user: User;
+
+	function handleMessage(event: CustomEvent<App.Superforms.Message>) {
+		if (event.detail?.type === 'success') {
+			open = false;
+		}
+	}
 </script>
 
 <Sheet.Root bind:open>
@@ -20,6 +26,6 @@
 				Make changes to your profile here. Click save when you're done.
 			</Sheet.Description>
 		</Sheet.Header>
-		<EditProfileForm data={{ form, user }} />
+		<EditProfileForm data={{ form, user }} on:message={handleMessage} />
 	</Sheet.Content>
 </Sheet.Root>

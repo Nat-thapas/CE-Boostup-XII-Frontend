@@ -4,13 +4,12 @@ import { zod } from 'sveltekit-superforms/adapters';
 
 import { PUBLIC_API_URL } from '$env/static/public';
 
-import type { Message } from '$lib/intefaces/form-message.interface';
 import { formSchema } from '$lib/schemas/edit-profile.schema';
 import { toBase64 } from '$lib/server/file-to-base64';
 
 export const actions: Actions = {
 	edit_profile: async (event) => {
-		const form = await superValidate<Infer<typeof formSchema>, Message>(event, zod(formSchema));
+		const form = await superValidate<Infer<typeof formSchema>>(event, zod(formSchema));
 
 		if (!form.valid) {
 			return fail(400, {
@@ -56,21 +55,59 @@ export const actions: Actions = {
 
 		if (!response.ok) {
 			const data = await response.json();
-			return message(
-				form,
-				{
-					status: 'error',
-					message: data.message
-				},
-				{
-					status: 400
+			let errorMessage: any;
+			if (data.errors) {
+				for (const key in data.errors) {
+					switch (key) {
+						case 'displayName':
+							form.errors.displayName = [data.errors.displayName];
+							break;
+						case 'oldPassword':
+							form.errors.oldPassword = [data.errors.oldPassword];
+							break;
+						case 'password':
+							form.errors.password = [data.errors.password];
+							break;
+						case 'confirmPassword':
+							form.errors.confirmPassword = [data.errors.confirmPassword];
+							break;
+						case 'bio':
+							form.errors.bio = [data.errors.bio];
+							break;
+						case 'avatar':
+							form.errors.avatar = [data.errors.avatar];
+							break;
+						default:
+							errorMessage = data.message;
+							break;
+					}
 				}
-			);
+			} else {
+				errorMessage = data.message;
+			}
+
+			if (errorMessage) {
+				errorMessage = errorMessage instanceof Array ? errorMessage.join(', ') : errorMessage;
+				return message(
+					form,
+					{
+						type: 'error',
+						text: errorMessage
+					},
+					{
+						status: 400
+					}
+				);
+			} else {
+				return fail(400, {
+					form
+				});
+			}
 		}
 
 		return message(form, {
-			status: 'success',
-			message: 'Profile updated successfully!'
+			type: 'success',
+			text: 'Profile updated successfully!'
 		});
 	}
 };

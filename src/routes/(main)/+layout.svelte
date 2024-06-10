@@ -2,11 +2,16 @@
 	import Moon from 'lucide-svelte/icons/moon';
 	import Sun from 'lucide-svelte/icons/sun';
 	import { toggleMode } from 'mode-watcher';
+	import { toast } from 'svelte-sonner';
+
+	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 
 	import logo_64x64 from '$lib/assets/logo/logo-64x64.avif';
 	import Breadcrumb from '$lib/components/nav/Breadcrumb.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Button } from '$lib/components/ui/button';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Separator } from '$lib/components/ui/separator';
 	import EditProfile from '$lib/components/user/EditProfile.svelte';
 	import { getInitial } from '$lib/get-initial';
@@ -16,6 +21,13 @@
 	export let data: LayoutData;
 
 	let editProfileSheetOpen = false;
+
+	function logout() {
+		fetch(`${base}/auth/logout`, { method: 'POST' }).then(() => {
+			toast.success('Logged out successfully');
+			goto(`${base}/auth/login`);
+		});
+	}
 </script>
 
 <nav class="flex w-full items-center justify-between px-16 py-2">
@@ -33,16 +45,27 @@
 			/>
 			<span class="sr-only">Toggle theme</span>
 		</Button>
-		<button
-			on:click={() => {
-				editProfileSheetOpen = true;
-			}}
-		>
-			<Avatar.Root>
-				<Avatar.Image src={data.user.avatarUrl} alt={`Avatar of ${data.user.displayName}`} />
-				<Avatar.Fallback>{getInitial(data.user.displayName ?? '')}</Avatar.Fallback>
-			</Avatar.Root>
-		</button>
+		<DropdownMenu.Root>
+			<DropdownMenu.Trigger
+				><Avatar.Root>
+					<Avatar.Image src={data.user.avatarUrl} alt={`Avatar of ${data.user.displayName}`} />
+					<Avatar.Fallback>{getInitial(data.user.displayName ?? '')}</Avatar.Fallback>
+				</Avatar.Root>
+			</DropdownMenu.Trigger>
+			<DropdownMenu.Content>
+				<DropdownMenu.Group>
+					<DropdownMenu.Label>My Account</DropdownMenu.Label>
+					<DropdownMenu.Separator />
+					<DropdownMenu.Item
+						on:click={() => {
+							editProfileSheetOpen = true;
+						}}
+						class="cursor-pointer">Profile</DropdownMenu.Item
+					>
+					<DropdownMenu.Item on:click={logout} class="cursor-pointer">Logout</DropdownMenu.Item>
+				</DropdownMenu.Group>
+			</DropdownMenu.Content>
+		</DropdownMenu.Root>
 	</div>
 </nav>
 

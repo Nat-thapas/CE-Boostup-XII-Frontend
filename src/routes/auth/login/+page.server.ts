@@ -1,5 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { superValidate } from 'sveltekit-superforms';
+import { message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
 import { base } from '$app/paths';
@@ -39,11 +39,43 @@ export const actions: Actions = {
 		});
 
 		if (!response.ok) {
-			form.errors.email = ['Invalid email or password'];
-			form.errors.password = ['Invalid email or password'];
-			return fail(response.status, {
-				form
-			});
+			const data = await response.json();
+			let errorMessage: any;
+			if (data.errors) {
+				for (const key in data.errors) {
+					switch (key) {
+						case 'email':
+							form.errors.email = [data.errors.email];
+							break;
+						case 'password':
+							form.errors.password = [data.errors.password];
+							break;
+						default:
+							errorMessage = data.message;
+							break;
+					}
+				}
+			} else {
+				errorMessage = data.message;
+			}
+
+			if (errorMessage) {
+				errorMessage = errorMessage instanceof Array ? errorMessage.join(', ') : errorMessage;
+				return message(
+					form,
+					{
+						type: 'error',
+						text: errorMessage
+					},
+					{
+						status: 400
+					}
+				);
+			} else {
+				return fail(400, {
+					form
+				});
+			}
 		}
 
 		const { token } = await response.json();

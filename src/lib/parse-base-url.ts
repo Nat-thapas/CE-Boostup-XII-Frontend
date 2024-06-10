@@ -1,10 +1,9 @@
+import { PUBLIC_ORIGIN } from '$env/static/public';
+
 export function parseBaseUrl(pathname: string, base: string): string {
-	if (base.startsWith('..')) {
-		throw new Error('Base URL cannot go up a directory');
+	if (base.startsWith('/')) {
+		return base;
 	}
-	return base.startsWith('/')
-		? base
-		: base.startsWith('.')
-			? `${pathname}${base.slice(1)}`
-			: `${pathname}/${base}`;
+	const url = new URL(base, PUBLIC_ORIGIN + pathname);
+	return url.pathname;
 }

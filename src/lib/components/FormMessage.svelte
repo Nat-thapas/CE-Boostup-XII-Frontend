@@ -1,19 +1,17 @@
 <script lang="ts">
-	import type { Message } from '$lib/intefaces/form-message.interface';
-
 	export let className: string = '';
 	export { className as class };
-	export let message: Message | undefined = undefined;
+	export let message: App.Superforms.Message | undefined = undefined;
 </script>
 
 <div class={className}>
 	{#if message}
-		{#if message.status === 'success'}
-			<div class="text-green-500">{message.message}</div>
-		{:else if message.status === 'warning'}
-			<div class="text-yellow-500">{message.message}</div>
-		{:else if message.status === 'error'}
-			<div class="text-red-500">{message.message}</div>
+		{#if message.type === 'success'}
+			<div class="text-green-500">{message.text}</div>
+		{:else if message.type === 'warning'}
+			<div class="text-yellow-500">{message.text}</div>
+		{:else if message.type === 'error'}
+			<div class="text-red-500">{message.text}</div>
 		{/if}
 	{/if}
 </div>

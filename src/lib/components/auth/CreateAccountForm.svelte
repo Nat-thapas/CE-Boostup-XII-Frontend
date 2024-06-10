@@ -1,10 +1,10 @@
 <script lang="ts">
+	import { toast } from 'svelte-sonner';
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
-	import type { Message } from '$lib/intefaces/form-message.interface';
 	import { formSchema, type FormSchema } from '$lib/schemas/create-account.schema';
 
 	import FormMessage from '../FormMessage.svelte';
@@ -16,10 +16,32 @@
 	export let className: string | undefined = undefined;
 	export { className as class };
 
-	const form = superForm<Infer<typeof formSchema>, Message>(data.form, {
+	const form = superForm<Infer<typeof formSchema>>(data.form, {
 		validators: zodClient(formSchema),
 
-		applyAction: true
+		applyAction: true,
+
+		onResult({ result }) {
+			if (result.type === 'redirect') {
+				toast.success('Account created successfully. You can now login.');
+			}
+		},
+
+		onUpdated({ form }) {
+			if (form.message) {
+				switch (form.message.type) {
+					case 'success':
+						toast.success(form.message.text);
+						break;
+					case 'warning':
+						toast.warning(form.message.text);
+						break;
+					case 'error':
+						toast.error(form.message.text);
+						break;
+				}
+			}
+		}
 	});
 
 	const { form: formData, enhance, message } = form;
