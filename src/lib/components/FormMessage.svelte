@@ -1,6 +1,7 @@
 <script lang="ts">
 	export let className: string = '';
 	export { className as class };
+	// eslint-disable-next-line no-undef
 	export let message: App.Superforms.Message | undefined = undefined;
 </script>
 

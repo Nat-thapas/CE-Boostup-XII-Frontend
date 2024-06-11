@@ -3,12 +3,12 @@
 
 	import { cn } from '$lib/utils.js';
 
-	type $$Props = HTMLAttributes<HTMLSpanElement>;
-
+	type $$Props = HTMLAttributes<HTMLLIElement>;
 	let className: $$Props['class'] = undefined;
+
 	export { className as class };
 </script>
 
-<span class={cn('ml-auto text-xs tracking-widest opacity-60', className)} {...$$restProps}>
+<li class={cn('', className)} {...$$restProps}>
 	<slot />
-</span>
+</li>

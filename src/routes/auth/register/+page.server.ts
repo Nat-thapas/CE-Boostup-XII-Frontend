@@ -38,7 +38,7 @@ export const actions: Actions = {
 
 		if (!response.ok) {
 			const data = await response.json();
-			let errorMessage: any;
+			let errorMessage: string | string[] | undefined;
 			if (data.errors) {
 				for (const key in data.errors) {
 					switch (key) {

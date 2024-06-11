@@ -33,13 +33,13 @@
 </script>
 
 <div class={className}>
-	<div class="flex">
+	<div class="flex items-center">
 		<p class="mr-4 w-8 lg:w-12">{problem.number}</p>
-		<div class="mr-4 flex w-0 flex-grow space-x-4">
+		<div class="mr-4 flex w-0 flex-grow items-center space-x-4">
 			<p class="w-full overflow-hidden text-ellipsis text-nowrap md:w-1/2">{problem.title}</p>
 			<p class="hidden w-1/2 overflow-hidden text-ellipsis text-nowrap md:inline">{tags}</p>
 		</div>
-		<div class="flex space-x-4">
+		<div class="flex items-center space-x-4">
 			<p class="hidden w-44 overflow-hidden text-ellipsis text-nowrap xl:inline">
 				{problem.owner?.displayName}
 			</p>

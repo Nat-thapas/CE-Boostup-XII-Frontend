@@ -12,7 +12,8 @@ export default defineConfig({
 			'svelte-codemirror-editor',
 			'@codemirror/lang-cpp',
 			'@codemirror/state',
-			'@uiw/codemirror-theme-vscode'
+			'@uiw/codemirror-theme-vscode',
+			'@uiw/codemirror-theme-github'
 		]
 	}
 });

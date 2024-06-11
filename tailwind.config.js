@@ -1,3 +1,4 @@
+import containerQuery from '@tailwindcss/container-queries';
 import { fontFamily } from 'tailwindcss/defaultTheme';
 
 /** @type {import('tailwindcss').Config} */
@@ -58,7 +59,8 @@ const config = {
 				sans: ['"IBM Plex Sans Thai"', '"IBM Plex Sans"', ...fontFamily.sans]
 			}
 		}
-	}
+	},
+	plugins: [containerQuery]
 };
 
 export default config;

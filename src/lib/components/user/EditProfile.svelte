@@ -11,6 +11,7 @@
 	export let form: SuperValidated<Infer<FormSchema>>;
 	export let user: User;
 
+	// eslint-disable-next-line no-undef
 	function handleMessage(event: CustomEvent<App.Superforms.Message>) {
 		if (event.detail?.type === 'success') {
 			open = false;
