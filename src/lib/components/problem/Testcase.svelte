@@ -6,7 +6,7 @@
 
 	import { Button } from '$lib/components/ui/button';
 	import { Label } from '$lib/components/ui/label';
-	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
+	import { ScrollArea } from '$lib/components/ui/scroll-area';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { format } from '$lib/format-number';
 	import { cn } from '$lib/utils';
@@ -72,6 +72,7 @@
 					>
 				{:else}
 					{#each outputLines as line}
+						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 						<code class="block whitespace-pre-wrap text-nowrap text-sm">{@html line}</code>
 					{/each}
 				{/if}

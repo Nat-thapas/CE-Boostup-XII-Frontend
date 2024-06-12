@@ -13,6 +13,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		user: {
 			...locals.user,
 			avatarUrl: `${PUBLIC_API_URL}/users/${locals.user.id}/avatar`
-		}
+		},
+		token: locals.token
 	};
 };

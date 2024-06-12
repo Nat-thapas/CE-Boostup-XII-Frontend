@@ -16,7 +16,7 @@
 	import Testcase from '$lib/components/problem/Testcase.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Resizable from '$lib/components/ui/resizable';
-	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
+	import { ScrollArea } from '$lib/components/ui/scroll-area';
 	import * as Select from '$lib/components/ui/select';
 
 	import type { PageData } from './$types';
@@ -308,7 +308,7 @@
 								<Testcase
 									number={i + 1}
 									bind:input
-									bind:output
+									{output}
 									{time}
 									{memory}
 									on:exitButtonClicked={() => {
@@ -327,6 +327,6 @@
 <style lang="postcss">
 	:global(.cm-line) {
 		font-family: 'Fira Code', monospace;
-		@apply text-sm lg:text-base;
+		@apply text-sm xl:text-base;
 	}
 </style>

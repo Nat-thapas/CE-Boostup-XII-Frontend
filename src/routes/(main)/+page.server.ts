@@ -1,5 +1,5 @@
 import type { Actions } from '@sveltejs/kit';
-import { fail, message, superValidate, type Infer } from 'sveltekit-superforms';
+import { fail, message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
 import { PUBLIC_API_URL } from '$env/static/public';
@@ -9,7 +9,7 @@ import { toBase64 } from '$lib/server/file-to-base64';
 
 export const actions: Actions = {
 	edit_profile: async (event) => {
-		const form = await superValidate<Infer<typeof formSchema>>(event, zod(formSchema));
+		const form = await superValidate(event, zod(formSchema));
 
 		if (!form.valid) {
 			return fail(400, {

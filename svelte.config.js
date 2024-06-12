@@ -11,14 +11,6 @@ const config = {
 		adapter: adapter(),
 		paths: {
 			base: '/grader/v2'
-		},
-		csp: {
-			directives: {
-				'script-src': ['self']
-			},
-			reportOnly: {
-				'script-src': ['self']
-			}
 		}
 	}
 };

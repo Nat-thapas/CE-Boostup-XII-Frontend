@@ -1,5 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { message, superValidate, type Infer } from 'sveltekit-superforms';
+import { message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
 import { base } from '$app/paths';
@@ -18,7 +18,7 @@ export const load: PageServerLoad = async ({ url }) => {
 
 export const actions: Actions = {
 	create_account: async (event) => {
-		const form = await superValidate<Infer<typeof formSchema>>(event, zod(formSchema));
+		const form = await superValidate(event, zod(formSchema));
 
 		if (!form.valid) {
 			return fail(400, {

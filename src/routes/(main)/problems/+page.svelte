@@ -50,7 +50,10 @@
 
 	let search = data.params.search ?? '';
 	let tagsStatus = Object.fromEntries(
-		data.problemTags.data.map((tag) => [tag.id, data.params.tags.split(',').includes(tag.id)])
+		data.problemTags.data.map((tag) => [
+			tag.id,
+			(data.params.tags ?? '').split(',').includes(tag.id)
+		])
 	);
 
 	$: tags = data.problemTags.data.filter((tag) => tagsStatus[tag.id]).map((tag) => tag.id);
@@ -92,7 +95,7 @@
 	<div class="mb-2 flex flex-wrap items-center gap-x-4 gap-y-2">
 		<form
 			on:submit|preventDefault={() => {
-				goto(`${url.pathname}?${setSearchParams(url.search, { search })}`);
+				goto(`${url.pathname}?${setSearchParams(url.search, { search, page: undefined })}`);
 			}}
 			class="flex w-64 flex-grow-[999] items-center"
 		>
@@ -106,7 +109,9 @@
 		<DropdownMenu.Root
 			onOpenChange={(open) => {
 				if (!open) {
-					goto(`${url.pathname}?${setSearchParams(url.search, { tags: tags.join(',') })}`);
+					goto(
+						`${url.pathname}?${setSearchParams(url.search, { tags: tags.join(','), page: undefined })}`
+					);
 				}
 			}}
 		>
@@ -128,13 +133,24 @@
 				{/each}
 			</DropdownMenu.Content>
 		</DropdownMenu.Root>
-		<Button
-			variant="outline"
-			class="flex flex-grow items-center space-x-2"
+		<div
+			class="flex h-10 flex-grow items-center space-x-2 rounded-md border border-border px-4 py-2"
 			on:click={() => {
 				difficulty = undefined;
-				goto(`${url.pathname}?${setSearchParams(url.search, { difficulties: difficulty })}`);
+				goto(
+					`${url.pathname}?${setSearchParams(url.search, { difficulties: difficulty, page: undefined })}`
+				);
 			}}
+			on:keydown={(e) => {
+				if (e.key === 'Enter') {
+					difficulty = undefined;
+					goto(
+						`${url.pathname}?${setSearchParams(url.search, { difficulties: difficulty, page: undefined })}`
+					);
+				}
+			}}
+			role="button"
+			tabindex="0"
 		>
 			<p class="!text-sm !font-normal">ความยาก</p>
 			<div class="flex items-center">
@@ -143,7 +159,9 @@
 					<button
 						on:click|stopPropagation={() => {
 							difficulty = i + 1;
-							goto(`${url.pathname}?${setSearchParams(url.search, { difficulties: difficulty })}`);
+							goto(
+								`${url.pathname}?${setSearchParams(url.search, { difficulties: difficulty, page: undefined })}`
+							);
 						}}
 					>
 						<Star
@@ -155,18 +173,21 @@
 					</button>
 				{/each}
 			</div>
-		</Button>
+		</div>
 		<Select.Root
 			selected={selectedCompletionStatus}
 			onSelectedChange={(v) => {
 				if (v) {
-					console.log(v.value);
 					if (v.value === 'All') {
 						completionStatus = undefined;
-						goto(`${url.pathname}?${setSearchParams(url.search, { completionStatus })}`);
+						goto(
+							`${url.pathname}?${setSearchParams(url.search, { completionStatus, page: undefined })}`
+						);
 					} else {
 						completionStatus = v.value;
-						goto(`${url.pathname}?${setSearchParams(url.search, { completionStatus })}`);
+						goto(
+							`${url.pathname}?${setSearchParams(url.search, { completionStatus, page: undefined })}`
+						);
 					}
 				}
 			}}
@@ -187,13 +208,16 @@
 				selected={selectedPublicationStatus}
 				onSelectedChange={(v) => {
 					if (v) {
-						console.log(v.value);
 						if (v.value === 'All') {
 							publicationStatus = undefined;
-							goto(`${url.pathname}?${setSearchParams(url.search, { publicationStatus })}`);
+							goto(
+								`${url.pathname}?${setSearchParams(url.search, { publicationStatus, page: undefined })}`
+							);
 						} else {
 							publicationStatus = v.value;
-							goto(`${url.pathname}?${setSearchParams(url.search, { publicationStatus })}`);
+							goto(
+								`${url.pathname}?${setSearchParams(url.search, { publicationStatus, page: undefined })}`
+							);
 						}
 					}
 				}}
@@ -217,10 +241,14 @@
 					onCheckedChange={(v) => {
 						if (v) {
 							myProblemsOnly = true;
-							goto(`${url.pathname}?${setSearchParams(url.search, { owner: data.user.id })}`);
+							goto(
+								`${url.pathname}?${setSearchParams(url.search, { owner: data.user.id, page: undefined })}`
+							);
 						} else {
 							myProblemsOnly = false;
-							goto(`${url.pathname}?${setSearchParams(url.search, { owner: undefined })}`);
+							goto(
+								`${url.pathname}?${setSearchParams(url.search, { owner: undefined, page: undefined })}`
+							);
 						}
 					}}
 				/>

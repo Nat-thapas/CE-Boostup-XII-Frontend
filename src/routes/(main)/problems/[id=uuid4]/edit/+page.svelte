@@ -3,7 +3,18 @@
 	import { githubLight } from '@uiw/codemirror-theme-github';
 	import { vscodeDark } from '@uiw/codemirror-theme-vscode';
 	import { Mutex } from 'async-mutex';
-	import { CirclePlay, LoaderCircle, Plus, Star, X } from 'lucide-svelte';
+	import {
+		Archive,
+		CirclePlay,
+		LoaderCircle,
+		Plus,
+		Rocket,
+		Save,
+		ScanSearch,
+		Star,
+		Undo2,
+		X
+	} from 'lucide-svelte';
 	import { mode } from 'mode-watcher';
 	import CodeMirror from 'svelte-codemirror-editor';
 	import { toast } from 'svelte-sonner';
@@ -17,6 +28,7 @@
 	import { compareOutput } from '$lib/compare-output';
 	import FormMessage from '$lib/components/FormMessage.svelte';
 	import EditableTestcase from '$lib/components/problem/EditableTestcase.svelte';
+	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import FileInput from '$lib/components/ui/FileInput.svelte';
@@ -29,8 +41,10 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { OptimizationLevel } from '$lib/enums/optimization-level.enum';
 	import { ProgrammingLanguage } from '$lib/enums/programming-language.enum';
+	import { PublicationStatus } from '$lib/enums/publication-status.enum';
 	import type { ProblemTag } from '$lib/intefaces/problem-tag.interface';
-	import { formSchema } from '$lib/schemas/create-problem.schema';
+	import { isAllNestedUndefined } from '$lib/is-all-nested-undefined';
+	import { formSchema } from '$lib/schemas/edit-problem.schema';
 
 	import type { PageData } from './$types';
 
@@ -60,18 +74,14 @@
 
 	export let data: PageData;
 
-	const form = superForm(data.createProblemForm, {
+	const form = superForm(data.editProblemForm, {
 		validators: zodClient(formSchema),
+
+		resetForm: false,
 
 		applyAction: true,
 
 		dataType: 'json',
-
-		onResult({ result }) {
-			if (result.type === 'redirect') {
-				toast.success('Problem created successfully. Redirecting you to the problem page...');
-			}
-		},
 
 		onUpdated({ form }) {
 			if (form.message) {
@@ -93,8 +103,10 @@
 	const { form: formData, message, enhance, errors } = form;
 
 	let solution =
+		data.problem.solution ??
 		'#include <stdio.h>\n\nint main() {\n    printf("Hello world!\\n");\n    return 0;\n}\n';
-	let starter = '';
+
+	let starter = data.problem.starterCode ?? '';
 
 	let examples: {
 		id: string;
@@ -104,17 +116,17 @@
 		errCode: string | undefined;
 		time: number | undefined;
 		memory: number | undefined;
-	}[] = [
-		{
-			id: crypto.randomUUID(),
-			input: '',
-			output: '',
-			passed: undefined,
-			errCode: undefined,
-			time: undefined,
-			memory: undefined
-		}
-	];
+	}[] = data.problem.exampleTestcases
+		? data.problem.exampleTestcases.map((testcase) => ({
+				id: crypto.randomUUID(),
+				input: testcase.input,
+				output: testcase.output,
+				passed: undefined,
+				errCode: undefined,
+				time: undefined,
+				memory: undefined
+			}))
+		: [];
 
 	let testcases: {
 		id: string;
@@ -124,26 +136,26 @@
 		errCode: string | undefined;
 		time: number | undefined;
 		memory: number | undefined;
-	}[] = [
-		{
-			id: crypto.randomUUID(),
-			input: '',
-			output: '',
-			passed: undefined,
-			errCode: undefined,
-			time: undefined,
-			memory: undefined
-		}
-	];
+	}[] = data.problem.testcases
+		? data.problem.testcases.map((testcase) => ({
+				id: crypto.randomUUID(),
+				input: testcase.input,
+				output: testcase.output,
+				passed: undefined,
+				errCode: undefined,
+				time: undefined,
+				memory: undefined
+			}))
+		: [];
 
-	let language: string = 'c++17';
+	let language: string = data.problem.solutionLanguage ?? 'c++17';
 
 	$: selectedLanguage = {
 		value: language,
 		label: language.toUpperCase()
 	};
 
-	let optimizationLevel = 'O1';
+	let optimizationLevel = data.problem.optimizationLevel ?? 'O1';
 
 	$: selectedOptimizationLevel = {
 		value: optimizationLevel,
@@ -396,6 +408,26 @@
 
 	const attachments = filesProxy(form, 'attachments');
 
+	function submitProblemForReview() {
+		$formData.publicationStatus = PublicationStatus.AwaitingApproval;
+		form.submit();
+	}
+
+	function revertProblemToDraft() {
+		$formData.publicationStatus = PublicationStatus.Draft;
+		form.submit();
+	}
+
+	function publishProblem() {
+		$formData.publicationStatus = PublicationStatus.Published;
+		form.submit();
+	}
+
+	function archiveProblem() {
+		$formData.publicationStatus = PublicationStatus.Archived;
+		form.submit();
+	}
+
 	$: $formData.solution = solution;
 	$: $formData.starterCode = starter;
 	$: $formData.solutionLanguage = language as ProgrammingLanguage;
@@ -403,6 +435,24 @@
 
 	$: $formData.exampleTestcases = examples.map(({ input, output }) => ({ input, output }));
 	$: $formData.testcases = testcases.map(({ input, output }) => ({ input, output }));
+
+	$formData.title = data.problem.title ?? '';
+	$formData.description = data.problem.description;
+	$formData.input = data.problem.input;
+	$formData.output = data.problem.output;
+	$formData.hint = data.problem.hint;
+	$formData.hintCost = data.problem.hintCost;
+	$formData.difficulty = data.problem.difficulty ?? 0;
+	$formData.score = data.problem.score ?? 0;
+	$formData.tags = data.problem.tags ? data.problem.tags.map((tag) => tag.id) : [];
+	$formData.allowAllHeaders = data.problem.allowedHeaders === null;
+	$formData.allowedHeaders = data.problem.allowedHeaders ?? [];
+	$formData.bannedFunctions = data.problem.bannedFunctions ?? [];
+	$formData.timeLimit = data.problem.timeLimit;
+	$formData.memoryLimit = data.problem.memoryLimit;
+	$formData.credits = data.problem.credits;
+	$formData.oldAttachments = data.problem.attachments ?? [];
+	$formData.publicationStatus = data.problem.publicationStatus ?? PublicationStatus.Archived;
 </script>
 
 <Resizable.PaneGroup direction="horizontal">
@@ -415,6 +465,7 @@
 						language = v.value;
 					}
 				}}
+				disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
 			>
 				<Select.Trigger class="w-32 flex-grow">
 					<Select.Value placeholder="Language" />
@@ -433,6 +484,7 @@
 						optimizationLevel = v.value;
 					}
 				}}
+				disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
 			>
 				<Select.Trigger class="w-28 flex-grow">
 					<Select.Value placeholder="Optimization" />
@@ -451,6 +503,7 @@
 						warningLevel = v.value;
 					}
 				}}
+				disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
 			>
 				<Select.Trigger class="w-32 flex-grow">
 					<Select.Value placeholder="Warning" />
@@ -487,6 +540,7 @@
 							fontSize: '0.875rem'
 						}
 					}}
+					readonly={data.problem.publicationStatus !== PublicationStatus.Draft}
 				/>
 			</Tabs.Content>
 			<Tabs.Content value="starter"
@@ -506,6 +560,7 @@
 							fontSize: '0.875rem'
 						}
 					}}
+					readonly={data.problem.publicationStatus !== PublicationStatus.Draft}
 				/></Tabs.Content
 			>
 		</Tabs.Root>
@@ -523,7 +578,7 @@
 					<ScrollArea class="h-full pr-4">
 						<form
 							method="POST"
-							action="?/create_problem"
+							action="?/create_problem&id={data.problem.id}"
 							enctype="multipart/form-data"
 							use:enhance
 							class="space-y-4 px-2"
@@ -531,7 +586,11 @@
 							<Form.Field {form} name="title">
 								<Form.Control let:attrs>
 									<Form.Label>ชื่อโจทย์</Form.Label>
-									<Input {...attrs} bind:value={$formData.title} />
+									<Input
+										{...attrs}
+										bind:value={$formData.title}
+										disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
+									/>
 								</Form.Control>
 								<Form.FieldErrors />
 							</Form.Field>
@@ -542,7 +601,12 @@
 										>ถึงลักษณะของโจทย์ สิ่งที่ต้องการให้ทำ อาจมีการยกตัวอย่าง
 										และการกล่าวถึงข้อจำกัดต่าง ๆ</Form.Description
 									>
-									<Textarea {...attrs} bind:value={$formData.description} class="resize-none" />
+									<Textarea
+										{...attrs}
+										bind:value={$formData.description}
+										disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
+										class="resize-none"
+									/>
 								</Form.Control>
 								<Form.FieldErrors />
 							</Form.Field>
@@ -552,7 +616,12 @@
 									<Form.Description
 										>ลักษณะของ Input เช่น จำนวนเต็ม 2 จำนวน คั่นด้วยลูกน้ำ</Form.Description
 									>
-									<Textarea {...attrs} bind:value={$formData.input} class="resize-none" />
+									<Textarea
+										{...attrs}
+										bind:value={$formData.input}
+										disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
+										class="resize-none"
+									/>
 								</Form.Control>
 								<Form.FieldErrors />
 							</Form.Field>
@@ -563,14 +632,24 @@
 										>ลักษณะของ Output เช่น ขอบรูปสี่เหลี่ยมที่สร้างด้วย *
 										ความกว้างเท่ากับจำนวนเต็มแรก ความสูงเท่ากับจำนวนเต็มหลัง</Form.Description
 									>
-									<Textarea {...attrs} bind:value={$formData.output} class="resize-none" />
+									<Textarea
+										{...attrs}
+										bind:value={$formData.output}
+										disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
+										class="resize-none"
+									/>
 								</Form.Control>
 								<Form.FieldErrors />
 							</Form.Field>
 							<Form.Field {form} name="hint">
 								<Form.Control let:attrs>
 									<Form.Label>คำใบ้ (ถ้าไม่มีไม่ต้องใส่)</Form.Label>
-									<Textarea {...attrs} bind:value={$formData.hint} class="resize-none" />
+									<Textarea
+										{...attrs}
+										bind:value={$formData.hint}
+										disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
+										class="resize-none"
+									/>
 								</Form.Control>
 								<Form.FieldErrors />
 							</Form.Field>
@@ -582,7 +661,8 @@
 										{...attrs}
 										bind:value={$formData.hintCost}
 										inputmode="numeric"
-										disabled={!$formData.hint}
+										disabled={!$formData.hint ||
+											data.problem.publicationStatus !== PublicationStatus.Draft}
 									/>
 								</Form.Control>
 								<Form.FieldErrors />
@@ -599,6 +679,7 @@
 										<div
 											{...attrs}
 											class="flex h-10 w-full items-center justify-start space-x-2 rounded-md border border-border px-2 py-4 hover:bg-muted"
+											class:cursor-no={data.problem.publicationStatus !== PublicationStatus.Draft}
 										>
 											<p class="text-nowrap text-sm font-normal">ความยาก</p>
 											<div class="flex items-center">
@@ -608,6 +689,9 @@
 														on:click|preventDefault|stopPropagation={() => {
 															$formData.difficulty = i + 1;
 														}}
+														disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
+														class:cursor-no={data.problem.publicationStatus !==
+															PublicationStatus.Draft}
 													>
 														<Star
 															color="#E2AD39"
@@ -627,7 +711,12 @@
 									<Form.Control let:attrs>
 										<Form.Label>คะแนน</Form.Label>
 										<Form.Description>≈ ความยาก X 100</Form.Description>
-										<Input {...attrs} bind:value={$formData.score} inputmode="numeric" />
+										<Input
+											{...attrs}
+											bind:value={$formData.score}
+											disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
+											inputmode="numeric"
+										/>
 									</Form.Control>
 									<Form.FieldErrors />
 								</Form.Field>
@@ -659,6 +748,7 @@
 																: undefined;
 														}
 													}}
+													disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
 												/>
 												<Form.Label class="font-normal">
 													{tag.name}
@@ -676,10 +766,16 @@
 													addNewTag();
 												}
 											}}
+											disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
 											placeholder="เพิ่มเนื้อหา"
 											class="flex h-9 w-full rounded-md rounded-r-none border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 										/>
-										<Button size="sm" on:click={addNewTag} class="rounded-l-none"><Plus /></Button>
+										<Button
+											size="sm"
+											on:click={addNewTag}
+											disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
+											class="rounded-l-none"><Plus /></Button
+										>
 									</div>
 									<Form.FieldErrors />
 								</div>
@@ -696,7 +792,7 @@
 										{#if !$formData.allowAllHeaders}
 											{#each $formData.allowedHeaders ?? [] as allowedHeader}
 												<div
-													class="dark:hover:bg-700 flex items-center space-x-1 rounded-lg bg-muted hover:bg-neutral-200"
+													class="flex items-center space-x-1 rounded-lg bg-muted hover:bg-neutral-200 dark:hover:bg-neutral-700"
 												>
 													<Form.Control let:attrs>
 														<Form.Label class="my-2 ml-2 font-normal">
@@ -708,6 +804,7 @@
 																	? $formData.allowedHeaders.filter((h) => h !== allowedHeader)
 																	: [];
 															}}
+															disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
 														>
 															<X size={28} class="p-2" />
 														</button>
@@ -732,12 +829,16 @@
 													addNewAllowedHeader();
 												}
 											}}
-											disabled={!!$formData.allowAllHeaders}
+											disabled={!!$formData.allowAllHeaders ||
+												data.problem.publicationStatus !== PublicationStatus.Draft}
 											placeholder="เพิ่ม Header ที่อนุญาต"
 											class="flex h-9 w-full rounded-md rounded-r-none border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 										/>
-										<Button size="sm" on:click={addNewAllowedHeader} class="rounded-l-none"
-											><Plus /></Button
+										<Button
+											size="sm"
+											on:click={addNewAllowedHeader}
+											disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
+											class="rounded-l-none"><Plus /></Button
 										>
 									</div>
 									<Form.FieldErrors />
@@ -746,7 +847,11 @@
 							<Form.Field {form} name="allowAllHeaders">
 								<Form.Control let:attrs>
 									<div class="flex items-center space-x-4 pb-4 pl-2">
-										<Checkbox {...attrs} bind:checked={$formData.allowAllHeaders} />
+										<Checkbox
+											{...attrs}
+											bind:checked={$formData.allowAllHeaders}
+											disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
+										/>
 										<div>
 											<Form.Label>อนุญาติให้ใช้ Header ทั้งหมด</Form.Label>
 											<Form.Description
@@ -768,7 +873,7 @@
 									<div class="flex flex-wrap gap-2">
 										{#each $formData.bannedFunctions ?? [] as bannedFunction}
 											<div
-												class="dark:hover:bg-700 flex items-center space-x-1 rounded-lg bg-muted hover:bg-neutral-200"
+												class="flex items-center space-x-1 rounded-lg bg-muted hover:bg-neutral-200 dark:hover:bg-neutral-700"
 											>
 												<Form.Control let:attrs>
 													<Form.Label class="my-2 ml-2 font-normal">
@@ -780,6 +885,7 @@
 																? $formData.bannedFunctions.filter((f) => f !== bannedFunction)
 																: [];
 														}}
+														disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
 													>
 														<X size={28} class="p-2" />
 													</button>
@@ -803,11 +909,15 @@
 													addNewBannedFunction();
 												}
 											}}
+											disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
 											placeholder="เพิ่ม Function ที่ห้ามใช้"
 											class="flex h-9 w-full rounded-md rounded-r-none border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 										/>
-										<Button size="sm" on:click={addNewBannedFunction} class="rounded-l-none"
-											><Plus /></Button
+										<Button
+											size="sm"
+											on:click={addNewBannedFunction}
+											disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
+											class="rounded-l-none"><Plus /></Button
 										>
 									</div>
 									<Form.FieldErrors />
@@ -819,7 +929,11 @@
 										<Form.Control let:attrs>
 											<Form.Label>จำกัดเวลาที่โปรแกรมใช้</Form.Label>
 											<Form.Description>หน่วยวินาที ความแม่นยำ 0.001 วินาที</Form.Description>
-											<Input {...attrs} bind:value={$formData.timeLimit} />
+											<Input
+												{...attrs}
+												bind:value={$formData.timeLimit}
+												disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
+											/>
 										</Form.Control>
 										<Form.FieldErrors />
 									</Form.Field>
@@ -829,7 +943,11 @@
 										<Form.Control let:attrs>
 											<Form.Label>จำกัด Ram ที่โปรแกรมใช้</Form.Label>
 											<Form.Description>หน่วย Byte, ไม่รวม Swap</Form.Description>
-											<Input {...attrs} bind:value={$formData.memoryLimit} />
+											<Input
+												{...attrs}
+												bind:value={$formData.memoryLimit}
+												disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
+											/>
 										</Form.Control>
 										<Form.FieldErrors />
 									</Form.Field>
@@ -838,10 +956,43 @@
 							<Form.Field {form} name="attachments">
 								<Form.Control let:attrs>
 									<Form.Label>Attachments</Form.Label>
-									<Form.Description>
-										ไฟล์ หรือรูปภาพที่เกี่ยวข้องกับโจทย์ สามารถอัพโหลดได้หลายไฟล์
-									</Form.Description>
-									<FileInput {...attrs} multiple bind:files={$attachments} />
+									<div class="flex flex-wrap gap-2">
+										{#each data.problem.attachments ?? [] as attachment}
+											<div
+												class="flex items-center space-x-2 rounded-lg bg-muted hover:bg-neutral-200 dark:hover:bg-neutral-700"
+											>
+												<a
+													href={`${PUBLIC_API_URL}${attachment.url}`}
+													target="_blank"
+													class="my-2 ml-3 font-normal hover:underline"
+												>
+													{attachment.name}
+												</a>
+												<button
+													on:click|preventDefault|stopPropagation={() => {
+														$formData.oldAttachments = $formData.oldAttachments
+															? $formData.oldAttachments.filter((a) => a.id !== attachment.id)
+															: [];
+														data.problem.attachments = data.problem.attachments
+															? data.problem.attachments.filter((a) => a.id !== attachment.id)
+															: [];
+													}}
+													class:cursor-no={data.problem.publicationStatus !==
+														PublicationStatus.Draft}
+													disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
+												>
+													<X size={24} class="mr-2 p-1" />
+												</button>
+											</div>
+										{/each}
+									</div>
+									<Form.Description>เลือกไฟล์ที่ต้องการเพิ่ม กดกากบาทเพื่อลบไฟล์</Form.Description>
+									<FileInput
+										{...attrs}
+										multiple
+										bind:files={$attachments}
+										disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
+									/>
 								</Form.Control>
 								<Form.FieldErrors />
 							</Form.Field>
@@ -851,26 +1002,38 @@
 									<Form.Description>
 										แหล่งที่มาของโจทย์ หรือผู้เขียนโจทย์ (ถ้าไม่ใช่ตนเอง)
 									</Form.Description>
-									<Input {...attrs} bind:value={$formData.credits} />
+									<Input
+										{...attrs}
+										bind:value={$formData.credits}
+										disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
+									/>
 								</Form.Control>
 								<Form.FieldErrors />
 							</Form.Field>
 							<div class="space-y-2">
-								{#if $errors.exampleTestcases}
+								{#if $errors.exampleTestcases && !isAllNestedUndefined($errors.exampleTestcases)}
 									<p class="text-sm font-medium text-destructive">
 										Invalid example testcase at # {Object.keys($errors.exampleTestcases)
+											.filter((n) => !isAllNestedUndefined($errors.exampleTestcases?.[n]))
 											.map((n) => +n + 1)
 											.join(', ')}
 									</p>
 								{/if}
-								{#if $errors.testcases}
+								{#if $errors.testcases && !isAllNestedUndefined($errors.testcases)}
 									<p class="text-sm font-medium text-destructive">
 										Invalid Testcase at # {Object.keys($errors.testcases)
+											.filter((n) => !isAllNestedUndefined($errors.testcases?.[n]))
 											.map((n) => +n + 1)
 											.join(', ')}
 									</p>
 								{/if}
 							</div>
+							<Form.Field {form} name="oldAttachments">
+								<Form.Control let:attrs>
+									<input name={attrs.name} hidden bind:value={$formData.oldAttachments} />
+								</Form.Control>
+								<Form.FieldErrors />
+							</Form.Field>
 							<Form.Field {form} name="solution">
 								<Form.Control let:attrs>
 									<input name={attrs.name} hidden bind:value={$formData.solution} />
@@ -905,9 +1068,210 @@
 									<input name={attrs.name} hidden bind:value={$formData.testcases} />
 								</Form.Control>
 							</Form.Field>
-							<Form.Button class="mt-4 w-full">Save</Form.Button>
+							{#if data.problem.publicationStatus === PublicationStatus.Approved}
+								<div class="pt-2">
+									<p class="font-bold text-green-500">Status: Approved!</p>
+								</div>
+							{/if}
+							{#if data.problem.publicationStatus === PublicationStatus.Rejected}
+								<div class="pt-2">
+									<p class="font-bold text-destructive">Status: Rejected</p>
+								</div>
+							{/if}
+							{#if data.problem.reviewComment && (data.problem.publicationStatus === PublicationStatus.Approved || data.problem.publicationStatus === PublicationStatus.Rejected)}
+								<div>
+									<p class="mb-3 text-sm font-medium">Review Comment</p>
+									<Textarea
+										value={data.problem.reviewComment}
+										readonly
+										class="h-32 w-full resize-none rounded-lg"
+									/>
+								</div>
+							{/if}
+							<div class="flex items-center space-x-4 pt-4">
+								{#if data.problem.publicationStatus === PublicationStatus.Draft}
+									<Form.Button class="flex w-0 flex-grow items-center space-x-2"
+										><Save />
+										<p>Save</p></Form.Button
+									>
+									<AlertDialog.Root>
+										<AlertDialog.Trigger asChild let:builder>
+											<Button
+												builders={[builder]}
+												class="flex w-0 flex-grow items-center space-x-2"
+											>
+												<ScanSearch />
+												<p>Submit for review</p>
+											</Button>
+										</AlertDialog.Trigger>
+										<AlertDialog.Content>
+											<AlertDialog.Header>
+												<AlertDialog.Title>ยืนยันการส่งโจทย์เข้าตรวจสอบใช่หรือไม่</AlertDialog.Title
+												>
+												<AlertDialog.Description>
+													เมื่อโจทย์อยู่ในสถานะรอการตรวจสอบจะไม่สามาระแก้ไขได้
+													แต่จะสามารถทำการยกเลิกได้
+													ซิ่งจะทำให้โจทย์กลับมาสู่สถานะร่างและสามารถแก้ไขได้อีกครั้ง
+												</AlertDialog.Description>
+											</AlertDialog.Header>
+											<AlertDialog.Footer>
+												<AlertDialog.Cancel>ยกเลิก</AlertDialog.Cancel>
+												<AlertDialog.Action on:click={submitProblemForReview}
+													>ยืนยัน</AlertDialog.Action
+												>
+											</AlertDialog.Footer>
+										</AlertDialog.Content>
+									</AlertDialog.Root>
+								{:else if data.problem.publicationStatus === PublicationStatus.AwaitingApproval}
+									<AlertDialog.Root>
+										<AlertDialog.Trigger asChild let:builder>
+											<Button
+												builders={[builder]}
+												class="flex w-0 flex-grow items-center space-x-2"
+											>
+												<Undo2 />
+												<p>Revert to Draft</p>
+											</Button>
+										</AlertDialog.Trigger>
+										<AlertDialog.Content>
+											<AlertDialog.Header>
+												<AlertDialog.Title
+													>ยืนยันการนำโจทยกลับสู่สถานะร่างใช่หรือไม่</AlertDialog.Title
+												>
+												<AlertDialog.Description>
+													เมื่อนำโจทย์กลับสู่สถานะร่างจะทำให้สามารถแก้ไขโจทย์ได้อีกครั้ง
+													แต่จะต้องผ่านการตรวจสอบอีกครั้งก่อนที่จะเผยแพร่
+												</AlertDialog.Description>
+											</AlertDialog.Header>
+											<AlertDialog.Footer>
+												<AlertDialog.Cancel>ยกเลิก</AlertDialog.Cancel>
+												<AlertDialog.Action on:click={revertProblemToDraft}
+													>ยืนยัน</AlertDialog.Action
+												>
+											</AlertDialog.Footer>
+										</AlertDialog.Content>
+									</AlertDialog.Root>
+									<Button disabled class="flex w-0 flex-grow items-center space-x-2">
+										<p>Waiting for approval...</p>
+									</Button>
+								{:else if data.problem.publicationStatus === PublicationStatus.Approved}
+									<AlertDialog.Root>
+										<AlertDialog.Trigger asChild let:builder>
+											<Button
+												builders={[builder]}
+												class="flex w-0 flex-grow items-center space-x-2"
+											>
+												<Undo2 />
+												<p>Revert to Draft</p>
+											</Button>
+										</AlertDialog.Trigger>
+										<AlertDialog.Content>
+											<AlertDialog.Header>
+												<AlertDialog.Title
+													>ยืนยันการนำโจทยกลับสู่สถานะร่างใช่หรือไม่</AlertDialog.Title
+												>
+												<AlertDialog.Description>
+													เมื่อนำโจทย์กลับสู่สถานะร่างจะทำให้สามารถแก้ไขโจทย์ได้อีกครั้ง
+													แต่จะต้องผ่านการตรวจสอบอีกครั้งก่อนที่จะเผยแพร่
+												</AlertDialog.Description>
+											</AlertDialog.Header>
+											<AlertDialog.Footer>
+												<AlertDialog.Cancel>ยกเลิก</AlertDialog.Cancel>
+												<AlertDialog.Action on:click={revertProblemToDraft}
+													>ยืนยัน</AlertDialog.Action
+												>
+											</AlertDialog.Footer>
+										</AlertDialog.Content>
+									</AlertDialog.Root>
+									<AlertDialog.Root>
+										<AlertDialog.Trigger asChild let:builder>
+											<Button
+												builders={[builder]}
+												class="flex w-0 flex-grow items-center space-x-2"
+											>
+												<Rocket />
+												<p>Publish</p>
+											</Button>
+										</AlertDialog.Trigger>
+										<AlertDialog.Content>
+											<AlertDialog.Header>
+												<AlertDialog.Title>ยืนยันการเผยแพร่โจทย์ใช่หรือไม่</AlertDialog.Title>
+												<AlertDialog.Description>
+													เมื่อเผยแพร่โจทย์แล้วจะทำให้โจทย์สามารถเข้าถึงได้จากทุกคน
+													และมีการนับคะแนนเมื่อทำสำเร็จ
+													โดยเมื่อเผยแพร่แล้วจะไม่สามารถแก้ไขหรือยกเลิกโจทย์ได้
+													ยกเว้นการเก็บถาวรเท่านั้น
+												</AlertDialog.Description>
+											</AlertDialog.Header>
+											<AlertDialog.Footer>
+												<AlertDialog.Cancel>ยกเลิก</AlertDialog.Cancel>
+												<AlertDialog.Action on:click={publishProblem}>ยืนยัน</AlertDialog.Action>
+											</AlertDialog.Footer>
+										</AlertDialog.Content>
+									</AlertDialog.Root>
+								{:else if data.problem.publicationStatus === PublicationStatus.Rejected}
+									<AlertDialog.Root>
+										<AlertDialog.Trigger asChild let:builder>
+											<Button
+												builders={[builder]}
+												class="flex w-0 flex-grow items-center space-x-2"
+											>
+												<Undo2 />
+												<p>Revert to Draft</p>
+											</Button>
+										</AlertDialog.Trigger>
+										<AlertDialog.Content>
+											<AlertDialog.Header>
+												<AlertDialog.Title
+													>ยืนยันการนำโจทยกลับสู่สถานะร่างใช่หรือไม่</AlertDialog.Title
+												>
+												<AlertDialog.Description>
+													เมื่อนำโจทย์กลับสู่สถานะร่างจะทำให้สามารถแก้ไขโจทย์ได้อีกครั้ง
+													แต่จะต้องผ่านการตรวจสอบอีกครั้งก่อนที่จะเผยแพร่
+												</AlertDialog.Description>
+											</AlertDialog.Header>
+											<AlertDialog.Footer>
+												<AlertDialog.Cancel>ยกเลิก</AlertDialog.Cancel>
+												<AlertDialog.Action on:click={revertProblemToDraft}
+													>ยืนยัน</AlertDialog.Action
+												>
+											</AlertDialog.Footer>
+										</AlertDialog.Content>
+									</AlertDialog.Root>
+								{:else if data.problem.publicationStatus === PublicationStatus.Published}
+									<AlertDialog.Root>
+										<AlertDialog.Trigger asChild let:builder>
+											<Button
+												builders={[builder]}
+												class="flex w-0 flex-grow items-center space-x-2"
+											>
+												<Archive />
+												<p>Archive</p>
+											</Button>
+										</AlertDialog.Trigger>
+										<AlertDialog.Content>
+											<AlertDialog.Header>
+												<AlertDialog.Title>ยืนยันการเก็บโจทย์ถาวรใช่หรือไม่</AlertDialog.Title>
+												<AlertDialog.Description>
+													เมื่อเก็บโจทย์ถาวรจะไม่สามารถแก้ไขหรือนำโจทย์กลับมาได้อีก
+													โจทย์ในสถานะนี้จะไม่สามารถเข้าถึงได้จากผู้ร่วมงาน และจะไม่มีการนับคะแนน
+												</AlertDialog.Description>
+											</AlertDialog.Header>
+											<AlertDialog.Footer>
+												<AlertDialog.Cancel>ยกเลิก</AlertDialog.Cancel>
+												<AlertDialog.Action on:click={archiveProblem}>ยืนยัน</AlertDialog.Action>
+											</AlertDialog.Footer>
+										</AlertDialog.Content>
+									</AlertDialog.Root>
+								{:else if data.problem.publicationStatus === PublicationStatus.Archived}
+									<Button disabled class="flex w-0 flex-grow items-center space-x-2">
+										<Archive />
+										<p>Archived</p>
+									</Button>
+								{/if}
+							</div>
 						</form>
-						<FormMessage message={$message} class="mt-2" />
+						<FormMessage message={$message} class="mx-2 mt-2" />
 					</ScrollArea>
 				</div>
 			</Tabs.Content>
@@ -915,7 +1279,8 @@
 				<div class="space-y-2">
 					<div class="mr-4 flex space-x-2">
 						<Button
-							disabled={examples.length >= 16}
+							disabled={examples.length >= 16 ||
+								data.problem.publicationStatus !== PublicationStatus.Draft}
 							on:click={() => {
 								examples = [
 									...examples,
@@ -968,6 +1333,7 @@
 											on:exitButtonClicked={() => {
 												examples = examples.filter((testcase) => testcase.id !== id);
 											}}
+											disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
 										/>
 									</div>
 								{/each}
@@ -980,7 +1346,8 @@
 				<div class="space-y-2">
 					<div class="mr-4 flex space-x-2">
 						<Button
-							disabled={testcases.length >= 64}
+							disabled={testcases.length >= 64 ||
+								data.problem.publicationStatus !== PublicationStatus.Draft}
 							on:click={() => {
 								testcases = [
 									...testcases,
@@ -1025,7 +1392,7 @@
 											number={i + 1}
 											bind:input
 											bind:output
-											error={$errors.exampleTestcases?.[i]}
+											error={$errors.testcases?.[i]}
 											{errCode}
 											{passed}
 											{time}
@@ -1037,6 +1404,7 @@
 												}
 												testcases = testcases.filter((testcase) => testcase.id !== id);
 											}}
+											disabled={data.problem.publicationStatus !== PublicationStatus.Draft}
 										/>
 									</div>
 								{/each}
@@ -1053,5 +1421,8 @@
 	:global(.cm-line) {
 		font-family: 'Fira Code', monospace;
 		@apply text-sm xl:text-base;
+	}
+	.cursor-no {
+		@apply cursor-not-allowed;
 	}
 </style>

@@ -27,7 +27,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		}
 	}
 
-	const problemsResponsePromise = await fetch(
+	const problemsResponsePromise = fetch(
 		`${PUBLIC_API_URL}/problems?` + new URLSearchParams(searchParams as Record<string, string>),
 		{
 			headers: {
@@ -37,7 +37,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		}
 	);
 
-	const problemTagsResponsePromise = await fetch(
+	const problemTagsResponsePromise = fetch(
 		`${PUBLIC_API_URL}/problem-tags?` +
 			new URLSearchParams({
 				sort: 'name',
@@ -55,7 +55,6 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const problemTagsResponse = await problemTagsResponsePromise;
 
 	if (!problemsResponse.ok) {
-		console.error(problemsResponse);
 		error(400, 'Failed to fetch problems');
 	}
 
@@ -66,7 +65,6 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	return {
 		params: searchParams,
-		user: locals.user,
 		problems: (await problemsResponse.json()) as PaginatedResponse<Problem>,
 		problemTags: (await problemTagsResponse.json()) as PaginatedResponse<ProblemTag>
 	};

@@ -16,7 +16,7 @@
 	export let className: string | undefined = undefined;
 	export { className as class };
 
-	const form = superForm<Infer<typeof formSchema>>(data.form, {
+	const form = superForm(data.form, {
 		validators: zodClient(formSchema),
 
 		applyAction: true,
