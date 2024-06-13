@@ -25,8 +25,7 @@
 	let:pages
 	let:range
 	asChild
-	{...$$restProps}
->
+	{...$$restProps}>
 	<nav {...builder} class={cn('mx-auto flex w-full flex-col items-center', className)}>
 		<slot {pages} {range} {currentPage} />
 	</nav>

@@ -1,10 +1,12 @@
 <script lang="ts">
+	import { Save } from 'lucide-svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
+	import { fileProxy, superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 
 	import { base } from '$app/paths';
+	import { PUBLIC_ACCEPTED_IMAGE_TYPES } from '$env/static/public';
 
 	import FormMessage from '$lib/components/FormMessage.svelte';
 	import FileInput from '$lib/components/ui/FileInput.svelte';
@@ -50,6 +52,8 @@
 
 	const { form: formData, enhance, message } = form;
 
+	const avatar = fileProxy(form, 'avatar');
+
 	$formData.displayName = data.user.displayName ?? '';
 	$formData.bio = data.user.bio ?? '';
 </script>
@@ -59,8 +63,7 @@
 	action="{base}/?/edit_profile&id={data.user.id}"
 	enctype="multipart/form-data"
 	use:enhance
-	class={className}
->
+	class={className}>
 	<Form.Field {form} name="displayName">
 		<Form.Control let:attrs>
 			<Form.Label>Display Name</Form.Label>
@@ -78,11 +81,7 @@
 	<Form.Field {form} name="avatar">
 		<Form.Control let:attrs>
 			<Form.Label>Avatar</Form.Label>
-			<FileInput
-				{...attrs}
-				bind:files={$formData.avatar}
-				accept="image/jpeg,image/png,image/svg+xml,image/gif,image/webp,image/avif"
-			/>
+			<FileInput {...attrs} bind:files={$avatar} accept={PUBLIC_ACCEPTED_IMAGE_TYPES} />
 		</Form.Control>
 		<Form.FieldErrors />
 	</Form.Field>
@@ -108,7 +107,10 @@
 		</Form.Control>
 		<Form.FieldErrors />
 	</Form.Field>
-	<Form.Button class="mt-4 w-full">Save changes</Form.Button>
+	<Form.Button class="mt-4 flex w-full items-center space-x-2">
+		<Save />
+		<p>Save changes</p>
+	</Form.Button>
 </form>
 
 <FormMessage message={$message} class="mt-2" />

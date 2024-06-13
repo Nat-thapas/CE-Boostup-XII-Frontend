@@ -50,8 +50,7 @@
 				class="hidden w-20 text-right sm:inline xl:text-left"
 				class:attempted={problem.completionStatus === CompletionStatus.Attempted}
 				class:unattempted={problem.completionStatus === CompletionStatus.Unattempted}
-				class:solved={problem.completionStatus === CompletionStatus.Solved}
-			>
+				class:solved={problem.completionStatus === CompletionStatus.Solved}>
 				{completionStatus}
 			</p>
 			{#if includePublicationStatus}
@@ -62,8 +61,7 @@
 					class:approved={problem.publicationStatus === PublicationStatus.Approved}
 					class:rejected={problem.publicationStatus === PublicationStatus.Rejected}
 					class:published={problem.publicationStatus === PublicationStatus.Published}
-					class:archived={problem.publicationStatus === PublicationStatus.Archived}
-				>
+					class:archived={problem.publicationStatus === PublicationStatus.Archived}>
 					{publicationStatus}
 				</p>
 			{/if}

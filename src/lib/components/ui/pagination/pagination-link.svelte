@@ -29,7 +29,6 @@
 		className
 	)}
 	{...$$restProps}
-	on:click
->
+	on:click>
 	<slot>{page.value}</slot>
 </PaginationPrimitive.Page>

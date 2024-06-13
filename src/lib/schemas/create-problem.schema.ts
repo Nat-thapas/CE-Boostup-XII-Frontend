@@ -69,7 +69,7 @@ export const formSchema = z
 		score: z.coerce.number().int().min(0, 'Score must be at least 0'),
 		optimizationLevel: z.nativeEnum(OptimizationLevel).optional(),
 		attachments: z
-			.instanceof(File, { message: 'Attachments must be a file' })
+			.instanceof(File, { message: 'Attachments must be files' })
 			.refine((file) => file.size <= 83886080, 'Attachments must be at most 80 MiB')
 			.array()
 			.max(8, 'At most 8 attachments are allowed')

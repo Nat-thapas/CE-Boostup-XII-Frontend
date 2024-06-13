@@ -25,7 +25,6 @@
 	{...$$restProps}
 	on:keydown
 	on:focusout
-	on:pointermove
->
+	on:pointermove>
 	<slot />
 </DropdownMenuPrimitive.SubContent>

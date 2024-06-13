@@ -24,20 +24,15 @@ export const actions: Actions = {
 			confirmPassword?: string;
 			bio?: string;
 			avatar?: string;
-		} = {};
-
-		if (form.data.displayName) {
-			body.displayName = form.data.displayName;
-		}
+		} = {
+			displayName: form.data.displayName,
+			bio: form.data.bio
+		};
 
 		if (form.data.password) {
 			body.oldPassword = form.data.oldPassword;
 			body.password = form.data.password;
 			body.confirmPassword = form.data.confirmPassword;
-		}
-
-		if (form.data.bio) {
-			body.bio = form.data.bio;
 		}
 
 		if (form.data.avatar) {

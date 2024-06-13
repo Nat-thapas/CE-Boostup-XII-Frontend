@@ -17,7 +17,6 @@
 	bind:paneGroup
 	{direction}
 	class={cn('flex h-full w-full data-[direction=vertical]:flex-col', className)}
-	{...$$restProps}
->
+	{...$$restProps}>
 	<slot />
 </ResizablePrimitive.PaneGroup>

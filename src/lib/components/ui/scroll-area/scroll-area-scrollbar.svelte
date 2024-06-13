@@ -19,10 +19,8 @@
 		orientation === 'vertical' && 'h-full w-2.5 border-l border-l-transparent p-px',
 		orientation === 'horizontal' && 'h-2.5 w-full border-t border-t-transparent p-px',
 		className
-	)}
->
+	)}>
 	<slot />
 	<ScrollAreaPrimitive.Thumb
-		class={cn('relative rounded-full bg-border', orientation === 'vertical' && 'flex-1')}
-	/>
+		class={cn('relative rounded-full bg-border', orientation === 'vertical' && 'flex-1')} />
 </ScrollAreaPrimitive.Scrollbar>

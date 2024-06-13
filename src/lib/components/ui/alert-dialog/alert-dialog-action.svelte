@@ -16,7 +16,6 @@
 	{...$$restProps}
 	on:click
 	on:keydown
-	let:builder
->
+	let:builder>
 	<slot {builder} />
 </AlertDialogPrimitive.Action>

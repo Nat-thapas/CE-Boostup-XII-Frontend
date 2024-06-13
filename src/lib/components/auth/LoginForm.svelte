@@ -3,6 +3,8 @@
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 
+	import { base } from '$app/paths';
+
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import { formSchema, type FormSchema } from '$lib/schemas/login.schema';
@@ -62,6 +64,7 @@
 		</Form.Control>
 		<Form.FieldErrors />
 	</Form.Field>
+	<a href="{base}/auth/reset" class="text-sm text-muted-foreground">Forgot password?</a>
 	<Form.Button class="mt-4 w-full">Login</Form.Button>
 </form>
 

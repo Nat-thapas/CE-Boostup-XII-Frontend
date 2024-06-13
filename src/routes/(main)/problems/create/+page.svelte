@@ -3,7 +3,7 @@
 	import { githubLight } from '@uiw/codemirror-theme-github';
 	import { vscodeDark } from '@uiw/codemirror-theme-vscode';
 	import { Mutex } from 'async-mutex';
-	import { CirclePlay, LoaderCircle, Plus, Star, X } from 'lucide-svelte';
+	import { CirclePlay, LoaderCircle, Plus, Save, Star, X } from 'lucide-svelte';
 	import { mode } from 'mode-watcher';
 	import CodeMirror from 'svelte-codemirror-editor';
 	import { toast } from 'svelte-sonner';
@@ -405,6 +405,10 @@
 	$: $formData.testcases = testcases.map(({ input, output }) => ({ input, output }));
 </script>
 
+<svelte:head>
+	<title>CE Boostup XII - Create Problem</title>
+</svelte:head>
+
 <Resizable.PaneGroup direction="horizontal">
 	<Resizable.Pane defaultSize={50} class="min-w-80">
 		<div class="m-2 flex space-x-2">
@@ -414,8 +418,7 @@
 					if (v) {
 						language = v.value;
 					}
-				}}
-			>
+				}}>
 				<Select.Trigger class="w-32 flex-grow">
 					<Select.Value placeholder="Language" />
 				</Select.Trigger>
@@ -432,8 +435,7 @@
 					if (v) {
 						optimizationLevel = v.value;
 					}
-				}}
-			>
+				}}>
 				<Select.Trigger class="w-28 flex-grow">
 					<Select.Value placeholder="Optimization" />
 				</Select.Trigger>
@@ -450,17 +452,16 @@
 					if (v) {
 						warningLevel = v.value;
 					}
-				}}
-			>
+				}}>
 				<Select.Trigger class="w-32 flex-grow">
 					<Select.Value placeholder="Warning" />
 				</Select.Trigger>
 				<Select.Content>
 					<Select.SelectLabel>Warning</Select.SelectLabel>
 					{#each warningLevels as warningLevel}
-						<Select.Item value={warningLevel}
-							>{warningLevel.charAt(0).toUpperCase() + warningLevel.slice(1)}</Select.Item
-						>
+						<Select.Item value={warningLevel}>
+							{warningLevel.charAt(0).toUpperCase() + warningLevel.slice(1)}
+						</Select.Item>
 					{/each}
 				</Select.Content>
 			</Select.Root>
@@ -486,11 +487,10 @@
 							borderRadius: '0.5rem',
 							fontSize: '0.875rem'
 						}
-					}}
-				/>
+					}} />
 			</Tabs.Content>
-			<Tabs.Content value="starter"
-				><CodeMirror
+			<Tabs.Content value="starter">
+				<CodeMirror
 					bind:value={starter}
 					lang={cpp()}
 					theme={$mode === 'light' ? githubLight : vscodeDark}
@@ -505,9 +505,8 @@
 							borderRadius: '0.5rem',
 							fontSize: '0.875rem'
 						}
-					}}
-				/></Tabs.Content
-			>
+					}} />
+			</Tabs.Content>
 		</Tabs.Root>
 	</Resizable.Pane>
 	<Resizable.Handle withHandle />
@@ -526,8 +525,7 @@
 							action="?/create_problem"
 							enctype="multipart/form-data"
 							use:enhance
-							class="space-y-4 px-2"
-						>
+							class="space-y-4 px-2">
 							<Form.Field {form} name="title">
 								<Form.Control let:attrs>
 									<Form.Label>ชื่อโจทย์</Form.Label>
@@ -538,10 +536,10 @@
 							<Form.Field {form} name="description">
 								<Form.Control let:attrs>
 									<Form.Label>คำอธิบายโจทย์</Form.Label>
-									<Form.Description
-										>ถึงลักษณะของโจทย์ สิ่งที่ต้องการให้ทำ อาจมีการยกตัวอย่าง
-										และการกล่าวถึงข้อจำกัดต่าง ๆ</Form.Description
-									>
+									<Form.Description>
+										ถึงลักษณะของโจทย์ สิ่งที่ต้องการให้ทำ อาจมีการยกตัวอย่าง
+										และการกล่าวถึงข้อจำกัดต่าง ๆ
+									</Form.Description>
 									<Textarea {...attrs} bind:value={$formData.description} class="resize-none" />
 								</Form.Control>
 								<Form.FieldErrors />
@@ -549,9 +547,9 @@
 							<Form.Field {form} name="input">
 								<Form.Control let:attrs>
 									<Form.Label>คำอธิบาย Input</Form.Label>
-									<Form.Description
-										>ลักษณะของ Input เช่น จำนวนเต็ม 2 จำนวน คั่นด้วยลูกน้ำ</Form.Description
-									>
+									<Form.Description>
+										ลักษณะของ Input เช่น จำนวนเต็ม 2 จำนวน คั่นด้วยลูกน้ำ
+									</Form.Description>
 									<Textarea {...attrs} bind:value={$formData.input} class="resize-none" />
 								</Form.Control>
 								<Form.FieldErrors />
@@ -559,10 +557,10 @@
 							<Form.Field {form} name="output">
 								<Form.Control let:attrs>
 									<Form.Label>คำอธิบาย Output</Form.Label>
-									<Form.Description
-										>ลักษณะของ Output เช่น ขอบรูปสี่เหลี่ยมที่สร้างด้วย *
-										ความกว้างเท่ากับจำนวนเต็มแรก ความสูงเท่ากับจำนวนเต็มหลัง</Form.Description
-									>
+									<Form.Description>
+										ลักษณะของ Output เช่น ขอบรูปสี่เหลี่ยมที่สร้างด้วย *
+										ความกว้างเท่ากับจำนวนเต็มแรก ความสูงเท่ากับจำนวนเต็มหลัง
+									</Form.Description>
 									<Textarea {...attrs} bind:value={$formData.output} class="resize-none" />
 								</Form.Control>
 								<Form.FieldErrors />
@@ -582,24 +580,23 @@
 										{...attrs}
 										bind:value={$formData.hintCost}
 										inputmode="numeric"
-										disabled={!$formData.hint}
-									/>
+										disabled={!$formData.hint} />
 								</Form.Control>
 								<Form.FieldErrors />
 							</Form.Field>
 							<div class="flex space-x-4">
 								<Form.Field {form} name="difficulty" class="flex-grow">
 									<Form.Control let:attrs>
-										<Form.Label>ความยาก</Form.Label><Form.Description
-											>ดูวิธีการเลือกได้ที่ <a
+										<Form.Label>ความยาก</Form.Label><Form.Description>
+											ดูวิธีการเลือกได้ที่ <a
 												href="https://docs.google.com/document/d/1nMUpoFvNJbHcjCra8hoOfUJo_EKPNhtQP6z7NMRWI-k"
-												class="underline">Google Docs</a
-											></Form.Description
-										>
+												class="underline">
+												Google Docs
+											</a>
+										</Form.Description>
 										<div
 											{...attrs}
-											class="flex h-10 w-full items-center justify-start space-x-2 rounded-md border border-border px-2 py-4 hover:bg-muted"
-										>
+											class="flex h-10 w-full items-center justify-start space-x-2 rounded-md border border-border px-2 py-4 hover:bg-muted">
 											<p class="text-nowrap text-sm font-normal">ความยาก</p>
 											<div class="flex items-center">
 												<!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
@@ -607,14 +604,12 @@
 													<button
 														on:click|preventDefault|stopPropagation={() => {
 															$formData.difficulty = i + 1;
-														}}
-													>
+														}}>
 														<Star
 															color="#E2AD39"
 															size={24}
 															fill="#E2AD39"
-															fill-opacity={i < ($formData.difficulty ?? 0) ? 1 : 0}
-														/>
+															fill-opacity={i < ($formData.difficulty ?? 0) ? 1 : 0} />
 													</button>
 												{/each}
 											</div>
@@ -658,8 +653,7 @@
 																? $formData.tags.filter((i) => i !== tag.id)
 																: undefined;
 														}
-													}}
-												/>
+													}} />
 												<Form.Label class="font-normal">
 													{tag.name}
 												</Form.Label>
@@ -677,8 +671,7 @@
 												}
 											}}
 											placeholder="เพิ่มเนื้อหา"
-											class="flex h-9 w-full rounded-md rounded-r-none border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-										/>
+											class="flex h-9 w-full rounded-md rounded-r-none border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" />
 										<Button size="sm" on:click={addNewTag} class="rounded-l-none"><Plus /></Button>
 									</div>
 									<Form.FieldErrors />
@@ -696,8 +689,7 @@
 										{#if !$formData.allowAllHeaders}
 											{#each $formData.allowedHeaders ?? [] as allowedHeader}
 												<div
-													class="dark:hover:bg-700 flex items-center space-x-1 rounded-lg bg-muted hover:bg-neutral-200"
-												>
+													class="dark:hover:bg-700 flex items-center space-x-1 rounded-lg bg-muted hover:bg-neutral-200">
 													<Form.Control let:attrs>
 														<Form.Label class="my-2 ml-2 font-normal">
 															{allowedHeader}
@@ -707,8 +699,7 @@
 																$formData.allowedHeaders = $formData.allowedHeaders
 																	? $formData.allowedHeaders.filter((h) => h !== allowedHeader)
 																	: [];
-															}}
-														>
+															}}>
 															<X size={28} class="p-2" />
 														</button>
 														<input
@@ -716,8 +707,7 @@
 															type="checkbox"
 															name={attrs.name}
 															value={allowedHeader}
-															checked={true}
-														/>
+															checked={true} />
 													</Form.Control>
 												</div>
 											{/each}
@@ -734,11 +724,10 @@
 											}}
 											disabled={!!$formData.allowAllHeaders}
 											placeholder="เพิ่ม Header ที่อนุญาต"
-											class="flex h-9 w-full rounded-md rounded-r-none border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-										/>
-										<Button size="sm" on:click={addNewAllowedHeader} class="rounded-l-none"
-											><Plus /></Button
-										>
+											class="flex h-9 w-full rounded-md rounded-r-none border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" />
+										<Button size="sm" on:click={addNewAllowedHeader} class="rounded-l-none">
+											<Plus />
+										</Button>
 									</div>
 									<Form.FieldErrors />
 								</div>
@@ -749,9 +738,9 @@
 										<Checkbox {...attrs} bind:checked={$formData.allowAllHeaders} />
 										<div>
 											<Form.Label>อนุญาติให้ใช้ Header ทั้งหมด</Form.Label>
-											<Form.Description
-												>อนุญาติให้ใช้ Header ทั้งหมดใน stdlib และ libm</Form.Description
-											>
+											<Form.Description>
+												อนุญาติให้ใช้ Header ทั้งหมดใน stdlib และ libm
+											</Form.Description>
 										</div>
 									</div>
 								</Form.Control>
@@ -768,8 +757,7 @@
 									<div class="flex flex-wrap gap-2">
 										{#each $formData.bannedFunctions ?? [] as bannedFunction}
 											<div
-												class="dark:hover:bg-700 flex items-center space-x-1 rounded-lg bg-muted hover:bg-neutral-200"
-											>
+												class="dark:hover:bg-700 flex items-center space-x-1 rounded-lg bg-muted hover:bg-neutral-200">
 												<Form.Control let:attrs>
 													<Form.Label class="my-2 ml-2 font-normal">
 														{bannedFunction}
@@ -779,8 +767,7 @@
 															$formData.bannedFunctions = $formData.bannedFunctions
 																? $formData.bannedFunctions.filter((f) => f !== bannedFunction)
 																: [];
-														}}
-													>
+														}}>
 														<X size={28} class="p-2" />
 													</button>
 													<input
@@ -788,8 +775,7 @@
 														type="checkbox"
 														name={attrs.name}
 														value={bannedFunction}
-														checked={true}
-													/>
+														checked={true} />
 												</Form.Control>
 											</div>
 										{/each}
@@ -804,11 +790,10 @@
 												}
 											}}
 											placeholder="เพิ่ม Function ที่ห้ามใช้"
-											class="flex h-9 w-full rounded-md rounded-r-none border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-										/>
-										<Button size="sm" on:click={addNewBannedFunction} class="rounded-l-none"
-											><Plus /></Button
-										>
+											class="flex h-9 w-full rounded-md rounded-r-none border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" />
+										<Button size="sm" on:click={addNewBannedFunction} class="rounded-l-none">
+											<Plus />
+										</Button>
 									</div>
 									<Form.FieldErrors />
 								</div>
@@ -905,7 +890,10 @@
 									<input name={attrs.name} hidden bind:value={$formData.testcases} />
 								</Form.Control>
 							</Form.Field>
-							<Form.Button class="mt-4 w-full">Save</Form.Button>
+							<Form.Button class="mt-4 flex w-full items-center space-x-2">
+								<Save />
+								<p>Save</p>
+							</Form.Button>
 						</form>
 						<FormMessage message={$message} class="mt-2" />
 					</ScrollArea>
@@ -930,20 +918,20 @@
 									}
 								];
 							}}
-							class="flex w-0 flex-grow items-center space-x-2"
-							><Plus />
-							<p>Add Testcase</p></Button
-						>
+							class="flex w-0 flex-grow items-center space-x-2">
+							<Plus />
+							<p>Add Testcase</p>
+						</Button>
 						{#if waiting}
 							<Button disabled class="flex w-0 flex-grow items-center space-x-2">
 								<LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
 								<p>Running...</p>
 							</Button>
 						{:else}
-							<Button class="flex w-0 flex-grow items-center space-x-2" on:click={testExamples}
-								><CirclePlay />
-								<p>Test</p></Button
-							>
+							<Button class="flex w-0 flex-grow items-center space-x-2" on:click={testExamples}>
+								<CirclePlay />
+								<p>Test</p>
+							</Button>
 						{/if}
 					</div>
 					<div style="height: calc(100vh - 180px);">
@@ -954,8 +942,7 @@
 										class="rounded-lg bg-muted p-2"
 										in:fade={{ duration: fadeDuration }}
 										out:fade={{ duration: fadeDuration }}
-										animate:flip={{ duration: flipDuration }}
-									>
+										animate:flip={{ duration: flipDuration }}>
 										<EditableTestcase
 											number={i + 1}
 											bind:input
@@ -967,8 +954,7 @@
 											{memory}
 											on:exitButtonClicked={() => {
 												examples = examples.filter((testcase) => testcase.id !== id);
-											}}
-										/>
+											}} />
 									</div>
 								{/each}
 							</div>
@@ -995,20 +981,20 @@
 									}
 								];
 							}}
-							class="flex w-0 flex-grow items-center space-x-2"
-							><Plus />
-							<p>Add Testcase</p></Button
-						>
+							class="flex w-0 flex-grow items-center space-x-2">
+							<Plus />
+							<p>Add Testcase</p>
+						</Button>
 						{#if waiting}
 							<Button disabled class="flex w-0 flex-grow items-center space-x-2">
 								<LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
 								<p>Running...</p>
 							</Button>
 						{:else}
-							<Button class="flex w-0 flex-grow items-center space-x-2" on:click={testTestcases}
-								><CirclePlay />
-								<p>Test</p></Button
-							>
+							<Button class="flex w-0 flex-grow items-center space-x-2" on:click={testTestcases}>
+								<CirclePlay />
+								<p>Test</p>
+							</Button>
 						{/if}
 					</div>
 					<div style="height: calc(100vh - 180px);">
@@ -1019,8 +1005,7 @@
 										class="rounded-lg bg-muted p-2"
 										in:fade={{ duration: fadeDuration }}
 										out:fade={{ duration: fadeDuration }}
-										animate:flip={{ duration: flipDuration }}
-									>
+										animate:flip={{ duration: flipDuration }}>
 										<EditableTestcase
 											number={i + 1}
 											bind:input
@@ -1036,8 +1021,7 @@
 													return;
 												}
 												testcases = testcases.filter((testcase) => testcase.id !== id);
-											}}
-										/>
+											}} />
 									</div>
 								{/each}
 							</div>

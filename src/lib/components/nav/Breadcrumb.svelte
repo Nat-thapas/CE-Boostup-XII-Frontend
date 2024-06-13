@@ -1,14 +1,20 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+
 	import { base } from '$app/paths';
 	import { page } from '$app/stores';
 
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb';
 	import { parseBaseUrl } from '$lib/parse-base-url';
+	import { replaceUUIDWithTile } from '$lib/replace-UUID-with-title';
 
 	let className: string | undefined = undefined;
 	export { className as class };
+	export let token: string;
 
 	$: baseUrl = parseBaseUrl($page.url.pathname, base);
+
+	$: originalPathname = $page.url.pathname.slice(baseUrl.length);
 
 	$: pathname = $page.url.pathname.slice(baseUrl.length);
 
@@ -27,11 +33,25 @@
 				.split('-')
 				.map((n) => n.charAt(0).toUpperCase() + n.slice(1))
 				.join(' '),
-			href: `${base}/${pathname
+			href: `${base}/${originalPathname
 				.split('/')
 				.slice(1, i + 2)
 				.join('/')}`
 		}));
+
+	let mounted = false;
+
+	function updatePathname(path: string, token: string) {
+		replaceUUIDWithTile(path, token).then((newPathname) => {
+			pathname = newPathname;
+		});
+	}
+
+	onMount(() => {
+		mounted = true;
+	});
+
+	$: mounted && updatePathname($page.url.pathname.slice(baseUrl.length), token);
 
 	$: console.log(
 		'actualpathname:',
@@ -52,9 +72,9 @@
 	<Breadcrumb.List>
 		{#if currentPageName}
 			<Breadcrumb.Item>
-				<Breadcrumb.Link href={`${base}/`} class="text-base font-medium"
-					>CE Boostup XII</Breadcrumb.Link
-				>
+				<Breadcrumb.Link href={`${base}/`} class="text-base font-medium">
+					CE Boostup XII
+				</Breadcrumb.Link>
 			</Breadcrumb.Item>
 			<Breadcrumb.Separator />
 		{/if}

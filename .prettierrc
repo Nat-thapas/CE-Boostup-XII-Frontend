@@ -9,6 +9,8 @@
 		"@ianvs/prettier-plugin-sort-imports"
 	],
 	"overrides": [{ "files": "*.svelte", "options": { "parser": "svelte" } }],
+	"htmlWhitespaceSensitivity": "ignore",
+	"bracketSameLine": true,
 	"importOrder": [
 		"<BUILTIN_MODULES>",
 		"",

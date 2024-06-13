@@ -18,5 +18,4 @@
 	{transition}
 	{transitionConfig}
 	class={cn('fixed inset-0 z-50 bg-background/80 backdrop-blur-sm ', className)}
-	{...$$restProps}
-/>
+	{...$$restProps} />

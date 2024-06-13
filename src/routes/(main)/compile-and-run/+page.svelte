@@ -177,6 +177,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>CE Boostup XII - Compile And Run</title>
+</svelte:head>
+
 <Resizable.PaneGroup direction="horizontal">
 	<Resizable.Pane defaultSize={50} class="min-w-80">
 		<div class="m-2 flex space-x-2">
@@ -187,8 +191,7 @@
 						language = v.value;
 						localStorage.setItem('language', language);
 					}
-				}}
-			>
+				}}>
 				<Select.Trigger class="w-32 flex-grow">
 					<Select.Value placeholder="Language" />
 				</Select.Trigger>
@@ -206,8 +209,7 @@
 						optimizationLevel = v.value;
 						localStorage.setItem('optimizationLevel', optimizationLevel);
 					}
-				}}
-			>
+				}}>
 				<Select.Trigger class="w-28 flex-grow">
 					<Select.Value placeholder="Optimization" />
 				</Select.Trigger>
@@ -225,17 +227,16 @@
 						warningLevel = v.value;
 						localStorage.setItem('warningLevel', warningLevel);
 					}
-				}}
-			>
+				}}>
 				<Select.Trigger class="w-32 flex-grow">
 					<Select.Value placeholder="Warning" />
 				</Select.Trigger>
 				<Select.Content>
 					<Select.SelectLabel>Warning</Select.SelectLabel>
 					{#each warningLevels as warningLevel}
-						<Select.Item value={warningLevel}
-							>{warningLevel.charAt(0).toUpperCase() + warningLevel.slice(1)}</Select.Item
-						>
+						<Select.Item value={warningLevel}>
+							{warningLevel.charAt(0).toUpperCase() + warningLevel.slice(1)}
+						</Select.Item>
 					{/each}
 				</Select.Content>
 			</Select.Root>
@@ -264,8 +265,7 @@
 						description: `Error: ${err instanceof Error ? err.message : 'Unknown error'}`
 					});
 				}
-			}}
-		/>
+			}} />
 	</Resizable.Pane>
 	<Resizable.Handle withHandle />
 	<Resizable.Pane defaultSize={50} class="min-w-80 px-2">
@@ -279,20 +279,20 @@
 							{ id: crypto.randomUUID(), input: '', output: '', time: undefined, memory: undefined }
 						];
 					}}
-					class="mt-2 flex w-0 flex-grow items-center space-x-2"
-					><Plus />
-					<p>Add Testcase</p></Button
-				>
+					class="mt-2 flex w-0 flex-grow items-center space-x-2">
+					<Plus />
+					<p>Add Testcase</p>
+				</Button>
 				{#if waiting}
 					<Button disabled class="mt-2 flex w-0 flex-grow items-center space-x-2">
 						<LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
 						<p>Running...</p>
 					</Button>
 				{:else}
-					<Button class="mt-2 flex w-0 flex-grow items-center space-x-2" on:click={run}
-						><CirclePlay />
-						<p>Run</p></Button
-					>
+					<Button class="mt-2 flex w-0 flex-grow items-center space-x-2" on:click={run}>
+						<CirclePlay />
+						<p>Run</p>
+					</Button>
 				{/if}
 			</div>
 			<div style="height: calc(100vh - 128px);">
@@ -303,8 +303,7 @@
 								class="rounded-lg bg-muted p-2"
 								in:fade={{ duration: fadeDuration }}
 								out:fade={{ duration: fadeDuration }}
-								animate:flip={{ duration: flipDuration }}
-							>
+								animate:flip={{ duration: flipDuration }}>
 								<Testcase
 									number={i + 1}
 									bind:input
@@ -313,8 +312,7 @@
 									{memory}
 									on:exitButtonClicked={() => {
 										testcases = testcases.filter((testcase) => testcase.id !== id);
-									}}
-								/>
+									}} />
 							</div>
 						{/each}
 					</div>

@@ -17,14 +17,17 @@
 	});
 </script>
 
+<svelte:head>
+	<title>CE Boostup XII - Login</title>
+</svelte:head>
+
 <div
-	class="mx-auto mt-8 w-96 rounded-lg bg-neutral-50 p-4 drop-shadow-lg dark:border dark:bg-background dark:drop-shadow-none"
->
+	class="mx-auto mt-8 w-96 rounded-lg bg-neutral-50 p-4 drop-shadow-lg dark:border dark:bg-background dark:drop-shadow-none">
 	<div class="mb-4 w-full text-center">
 		<h1 class="text-2xl font-bold">Login</h1>
 	</div>
 	<LoginForm data={{ form: data.form, next: data.next }} />
-	<a href="{base}/auth/register" class="mt-4 block text-center text-sm text-blue-500"
-		>Don't have an account? Register here</a
-	>
+	<a href="{base}/auth/register" class="mt-4 block text-center text-sm text-blue-500">
+		Don't have an account? Register here
+	</a>
 </div>

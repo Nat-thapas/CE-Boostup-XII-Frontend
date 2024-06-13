@@ -44,32 +44,28 @@
 			variant="ghost"
 			on:click={() => {
 				dispatch('exitButtonClicked');
-			}}
-		>
+			}}>
 			<X size={16} />
 		</Button>
 	</div>
 	<div
-		class="flex h-64 min-h-64 resize-y flex-col space-y-2 overflow-hidden p-2 @4xl:h-32 @4xl:min-h-32 @4xl:flex-row @4xl:space-x-2 @4xl:space-y-0 2xl:h-80 2xl:min-h-80 @4xl:2xl:h-40 @4xl:2xl:min-h-40"
-	>
+		class="flex h-64 min-h-64 resize-y flex-col space-y-2 overflow-hidden p-2 @4xl:h-32 @4xl:min-h-32 @4xl:flex-row @4xl:space-x-2 @4xl:space-y-0 2xl:h-80 2xl:min-h-80 @4xl:2xl:h-40 @4xl:2xl:min-h-40">
 		<div class="flex h-0 w-full flex-grow flex-col space-y-1 @4xl:h-full @4xl:w-0">
 			<Label>Input</Label>
 			<Textarea
 				placeholder="Enter your input here"
 				bind:value={input}
-				class="textarea-code h-0 flex-grow resize-none rounded-lg"
-			/>
+				class="textarea-code h-0 flex-grow resize-none rounded-lg" />
 		</div>
 		<div class="flex h-0 w-full flex-grow flex-col space-y-1 @4xl:h-full @4xl:w-0">
 			<Label>Output</Label>
 			<ScrollArea
 				orientation="both"
-				class="h-0 w-full flex-grow rounded-lg border border-border bg-background px-3 py-2"
-			>
+				class="h-0 w-full flex-grow rounded-lg border border-border bg-background px-3 py-2">
 				{#if outputLines.length === 0 || (outputLines.length === 1 && outputLines[0] === '')}
-					<code class="block whitespace-pre-wrap text-nowrap text-sm text-muted-foreground"
-						>The output will be here when you run the code</code
-					>
+					<code class="block whitespace-pre-wrap text-nowrap text-sm text-muted-foreground">
+						The output will be here when you run the code
+					</code>
 				{:else}
 					{#each outputLines as line}
 						<!-- eslint-disable-next-line svelte/no-at-html-tags -->

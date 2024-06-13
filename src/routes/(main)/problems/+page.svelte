@@ -91,19 +91,21 @@
 	let sort = data.params.sort ?? undefined;
 </script>
 
+<svelte:head>
+	<title>CE Boostup XII - Problems</title>
+</svelte:head>
+
 <div class="mx-8 my-2">
 	<div class="mb-2 flex flex-wrap items-center gap-x-4 gap-y-2">
 		<form
 			on:submit|preventDefault={() => {
 				goto(`${url.pathname}?${setSearchParams(url.search, { search, page: undefined })}`);
 			}}
-			class="flex w-64 flex-grow-[999] items-center"
-		>
+			class="flex w-64 flex-grow-[999] items-center">
 			<Input
 				placeholder="ค้นหาด้วยเลขข้อหรือชื่อโจทย์"
 				bind:value={search}
-				class="flex-grow rounded-r-none"
-			/>
+				class="flex-grow rounded-r-none" />
 			<Button type="submit" class="rounded-l-none"><Search /></Button>
 		</form>
 		<DropdownMenu.Root
@@ -114,20 +116,23 @@
 					);
 				}
 			}}
-		>
+			closeOnItemClick={false}>
 			<DropdownMenu.Trigger asChild let:builder>
-				<Button variant="outline" builders={[builder]} class="flex flex-grow items-center space-x-2"
-					><p class="!text-sm !font-normal">เนื้อหา</p>
-					<ChevronDown /></Button
-				>
+				<Button
+					variant="outline"
+					builders={[builder]}
+					class="flex w-28 flex-grow items-center justify-between">
+					<p class="!text-sm !font-normal">เนื้อหา</p>
+					<ChevronDown class="h-4 w-4 opacity-50" />
+				</Button>
 			</DropdownMenu.Trigger>
 			<DropdownMenu.Content class="w-48">
 				<DropdownMenu.Label>เลือกเนื้อหา</DropdownMenu.Label>
 				<DropdownMenu.Separator />
 				{#each data.problemTags.data as tag (tag.id)}
-					<DropdownMenu.CheckboxItem bind:checked={tagsStatus[tag.id]}
-						>{tag.name}</DropdownMenu.CheckboxItem
-					>
+					<DropdownMenu.CheckboxItem bind:checked={tagsStatus[tag.id]}>
+						{tag.name}
+					</DropdownMenu.CheckboxItem>
 				{:else}
 					<DropdownMenu.Item disabled>ไม่มีเนื้อหา</DropdownMenu.Item>
 				{/each}
@@ -150,8 +155,7 @@
 				}
 			}}
 			role="button"
-			tabindex="0"
-		>
+			tabindex="0">
 			<p class="!text-sm !font-normal">ความยาก</p>
 			<div class="flex items-center">
 				<!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
@@ -162,14 +166,12 @@
 							goto(
 								`${url.pathname}?${setSearchParams(url.search, { difficulties: difficulty, page: undefined })}`
 							);
-						}}
-					>
+						}}>
 						<Star
 							color="#E2AD39"
 							size={24}
 							fill="#E2AD39"
-							fill-opacity={i < (difficulty ?? 0) ? 1 : 0}
-						/>
+							fill-opacity={i < (difficulty ?? 0) ? 1 : 0} />
 					</button>
 				{/each}
 			</div>
@@ -190,8 +192,7 @@
 						);
 					}
 				}
-			}}
-		>
+			}}>
 			<Select.Trigger class="w-32 flex-grow">
 				<Select.Value placeholder="สถานะ" />
 			</Select.Trigger>
@@ -220,8 +221,7 @@
 							);
 						}
 					}
-				}}
-			>
+				}}>
 				<Select.Trigger class="w-32 flex-grow">
 					<Select.Value placeholder="สถานะโจทย์" />
 				</Select.Trigger>
@@ -234,8 +234,7 @@
 				</Select.Content>
 			</Select.Root>
 			<div
-				class="flex h-10 flex-grow items-center space-x-2 rounded-lg border border-border px-4 py-2"
-			>
+				class="flex h-10 flex-grow items-center space-x-2 rounded-lg border border-border px-4 py-2">
 				<Checkbox
 					id="my-problems-only-checkbox"
 					onCheckedChange={(v) => {
@@ -250,8 +249,7 @@
 								`${url.pathname}?${setSearchParams(url.search, { owner: undefined, page: undefined })}`
 							);
 						}
-					}}
-				/>
+					}} />
 				<Label for="my-problems-only-checkbox" class="text-sm font-normal">เฉพาะโจทย์ของฉัน</Label>
 			</div>
 		{/if}
@@ -266,8 +264,7 @@
 				}
 				goto(`${url.pathname}?${setSearchParams(url.search, { sort })}`);
 			}}
-			class="mr-4 flex w-8 items-center lg:w-12 lg:space-x-1"
-		>
+			class="mr-4 flex w-8 items-center lg:w-12 lg:space-x-1">
 			<p>ข้อ</p>
 			{#if sort === 'number'}
 				<ArrowUp size={16} />
@@ -285,14 +282,14 @@
 					}
 					goto(`${url.pathname}?${setSearchParams(url.search, { sort })}`);
 				}}
-				class="flex w-full items-center space-x-1 overflow-hidden text-ellipsis text-nowrap md:w-1/2"
-				><p>ชื่อโจทย์</p>
+				class="flex w-full items-center space-x-1 overflow-hidden text-ellipsis text-nowrap md:w-1/2">
+				<p>ชื่อโจทย์</p>
 				{#if sort === 'title'}
 					<ArrowUp size={16} />
 				{:else if sort === '-title'}
 					<ArrowDown size={16} />
-				{/if}</button
-			>
+				{/if}
+			</button>
 			<p class="hidden w-1/2 overflow-hidden text-ellipsis text-nowrap md:inline">เนื้อหา</p>
 		</div>
 		<div class="flex space-x-4">
@@ -306,14 +303,14 @@
 					}
 					goto(`${url.pathname}?${setSearchParams(url.search, { sort })}`);
 				}}
-				class="hidden w-32 items-center space-x-1 sm:flex md:w-36 lg:w-44"
-				><p>ความยาก</p>
+				class="hidden w-32 items-center space-x-1 sm:flex md:w-36 lg:w-44">
+				<p>ความยาก</p>
 				{#if sort === 'difficulty'}
 					<ArrowUp size={16} />
 				{:else if sort === '-difficulty'}
 					<ArrowDown size={16} />
-				{/if}</button
-			>
+				{/if}
+			</button>
 			<button
 				on:click={() => {
 					if (sort === 'score') {
@@ -323,14 +320,14 @@
 					}
 					goto(`${url.pathname}?${setSearchParams(url.search, { sort })}`);
 				}}
-				class="flex w-16 items-center space-x-1 lg:w-24"
-				><p>คะแนน</p>
+				class="flex w-16 items-center space-x-1 lg:w-24">
+				<p>คะแนน</p>
 				{#if sort === 'score'}
 					<ArrowUp size={16} />
 				{:else if sort === '-score'}
 					<ArrowDown size={16} />
-				{/if}</button
-			>
+				{/if}
+			</button>
 			<button
 				on:click={() => {
 					if (sort === 'userSolvedCount') {
@@ -340,14 +337,14 @@
 					}
 					goto(`${url.pathname}?${setSearchParams(url.search, { sort })}`);
 				}}
-				class="hidden w-12 items-center space-x-1 md:flex lg:w-20"
-				><p>ผ่าน</p>
+				class="hidden w-12 items-center space-x-1 md:flex lg:w-20">
+				<p>ผ่าน</p>
 				{#if sort === 'userSolvedCount'}
 					<ArrowUp size={16} />
 				{:else if sort === '-userSolvedCount'}
 					<ArrowDown size={16} />
-				{/if}</button
-			>
+				{/if}
+			</button>
 			<p class="hidden w-20 pl-2 sm:inline xl:pl-0 xl:text-left">สถานะ</p>
 			{#if isUserStaffOrHigher}
 				<p class="hidden w-24 text-right xl:inline">สถานะโจทย์</p>
@@ -360,8 +357,7 @@
 				<Problem
 					{problem}
 					includePublicationStatus={isUserStaffOrHigher}
-					class="w-full rounded-lg bg-muted px-4 py-3 transition-all hover:scale-105 hover:bg-neutral-200 dark:hover:bg-neutral-700 md:hover:scale-[1.04] lg:hover:scale-[1.03] xl:hover:scale-[1.02] 2xl:hover:scale-[1.01]"
-				/>
+					class="w-full rounded-lg bg-muted px-4 py-3 transition-all hover:scale-105 hover:bg-neutral-200 dark:hover:bg-neutral-700 md:hover:scale-[1.04] lg:hover:scale-[1.03] xl:hover:scale-[1.02] 2xl:hover:scale-[1.01]" />
 			</a>
 		{:else}
 			<p class="text-center my-4">ไม่พบโจทย์ที่ค้นหา</p>
@@ -374,8 +370,7 @@
 		onPageChange={(newPage) => {
 			goto(`${url.pathname}?${setSearchParams(url.search, { page: newPage })}`);
 		}}
-		class="mb-2 mt-4"
-	>
+		class="mb-2 mt-4">
 		<Pagination.Content>
 			<Pagination.Item>
 				<Pagination.PrevButton />
@@ -402,9 +397,9 @@
 {#if isUserStaffOrHigher}
 	<a href={`${base}/problems/create`}>
 		<Button
-			class="fixed bottom-4 right-4 h-16 w-16 rounded-full p-4 transition-transform hover:scale-110"
-			><Plus size={32} /></Button
-		>
+			class="fixed bottom-4 right-4 h-16 w-16 rounded-full p-4 transition-transform hover:scale-110">
+			<Plus size={32} />
+		</Button>
 	</a>
 {/if}
 

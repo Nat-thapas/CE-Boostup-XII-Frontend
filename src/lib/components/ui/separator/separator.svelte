@@ -19,5 +19,4 @@
 	)}
 	{orientation}
 	{decorative}
-	{...$$restProps}
-/>
+	{...$$restProps} />

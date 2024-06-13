@@ -18,7 +18,6 @@
 	aria-disabled="true"
 	aria-current="page"
 	class={cn('font-normal text-foreground', className)}
-	{...$$restProps}
->
+	{...$$restProps}>
 	<slot />
 </span>

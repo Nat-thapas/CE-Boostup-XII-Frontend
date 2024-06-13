@@ -11,24 +11,10 @@ export const formSchema = z
 			.optional(),
 		bio: z.string().max(16383, 'Bio must be at most 16383 characters long').optional(),
 		avatar: z
-			.any()
+			.instanceof(File, { message: 'Avatar must be a file' })
+			.refine((f) => f.size < 5 * 1024 * 1024, 'Max 5 MiB upload size.')
 			.refine((f) => {
-				if (f instanceof File) {
-					return true;
-				}
-				return f.length === 1;
-			}, 'Only one file can be uploaded at a time.')
-			.refine((f) => {
-				if (f instanceof File) {
-					return f.size <= 5 * 1024 * 1024;
-				}
-				return f[0].size <= 5 * 1024 * 1024;
-			}, 'Max 5 MiB upload size.')
-			.refine((f) => {
-				if (f instanceof File) {
-					return PUBLIC_ACCEPTED_IMAGE_TYPES.includes(f.type);
-				}
-				return PUBLIC_ACCEPTED_IMAGE_TYPES.includes(f[0].type);
+				return PUBLIC_ACCEPTED_IMAGE_TYPES.includes(f.type);
 			}, 'Only .jpg, .jpeg, .png, .svg, .gif, .webp and .avif files are accepted.')
 			.optional(),
 		oldPassword: z.string().optional(),

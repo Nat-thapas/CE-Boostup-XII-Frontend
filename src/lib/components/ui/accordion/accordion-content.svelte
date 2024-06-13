@@ -18,8 +18,7 @@
 	class={cn('overflow-hidden text-sm transition-all', className)}
 	{transition}
 	{transitionConfig}
-	{...$$restProps}
->
+	{...$$restProps}>
 	<div class="pb-4 pt-0">
 		<slot />
 	</div>

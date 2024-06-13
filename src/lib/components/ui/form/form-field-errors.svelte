@@ -17,8 +17,7 @@
 	{...$$restProps}
 	let:errors
 	let:fieldErrorsAttrs
-	let:errorAttrs
->
+	let:errorAttrs>
 	<slot {errors} {fieldErrorsAttrs} {errorAttrs}>
 		{#each errors as error}
 			<div {...errorAttrs} class={cn(errorClasses)}>{error}</div>

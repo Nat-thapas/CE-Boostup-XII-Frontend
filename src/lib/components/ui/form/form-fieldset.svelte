@@ -26,7 +26,6 @@
 	let:errors
 	let:tainted
 	let:value
-	class={cn('space-y-2', className)}
->
+	class={cn('space-y-2', className)}>
 	<slot {constraints} {errors} {tainted} {value} />
 </FormPrimitive.Fieldset>

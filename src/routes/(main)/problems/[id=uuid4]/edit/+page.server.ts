@@ -6,9 +6,11 @@ import { PUBLIC_API_URL } from '$env/static/public';
 
 import { assignDefined } from '$lib/assign-defined';
 import { PublicationStatus } from '$lib/enums/publication-status.enum';
+import { Role } from '$lib/enums/role.enum';
 import type { PaginatedResponse } from '$lib/intefaces/pagination.interface';
 import type { ProblemTag } from '$lib/intefaces/problem-tag.interface';
 import type { Problem } from '$lib/intefaces/problem.interface';
+import { isSomeRolesIn } from '$lib/roles';
 import { formSchema } from '$lib/schemas/edit-problem.schema';
 
 import type { PageServerLoad } from './$types';
@@ -37,12 +39,20 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	const problemResponse = await problemResponsePromise;
 
-	const problemTagsResponse = await problemTagsResponsePromise;
-
 	if (!problemResponse.ok) {
 		error(404, 'Problem not found');
 	}
 
+	const problem = (await problemResponse.json()) as Problem;
+
+	if (
+		problem.owner?.id !== locals.user.id &&
+		!isSomeRolesIn(locals.user.roles ?? [], [Role.Reviewer, Role.Admin, Role.SuperAdmin])
+	) {
+		error(403, 'You are not allowed to edit this problem');
+	}
+
+	const problemTagsResponse = await problemTagsResponsePromise;
 	if (!problemTagsResponse.ok) {
 		console.error(problemTagsResponse);
 		error(500, 'Failed to fetch problem tags');
@@ -50,13 +60,13 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	return {
 		editProblemForm: await superValidate(zod(formSchema)),
-		problem: (await problemResponse.json()) as Problem,
+		problem,
 		problemTags: (await problemTagsResponse.json()) as PaginatedResponse<ProblemTag>
 	};
 };
 
 export const actions: Actions = {
-	create_problem: async (event) => {
+	edit_problem: async (event) => {
 		const form = await superValidate(event, zod(formSchema));
 
 		if (!form.valid) {
@@ -89,8 +99,12 @@ export const actions: Actions = {
 		}
 
 		const currentPublicationStatus = currentProblem.publicationStatus;
+		const problemOwner = currentProblem.owner.id;
 
-		if (currentPublicationStatus === PublicationStatus.Draft) {
+		if (
+			currentPublicationStatus === PublicationStatus.Draft &&
+			problemOwner === event.locals.user.id
+		) {
 			const body: Record<string, any> = {};
 
 			assignDefined(body, {
@@ -123,6 +137,11 @@ export const actions: Actions = {
 				if (!body.attachments) {
 					body.attachments = [];
 				}
+
+				if (!form.data.oldAttachments) {
+					form.data.oldAttachments = [];
+				}
+
 				for (const [i, attachment] of Object.entries(form.data.attachments)) {
 					const formData = new FormData();
 					formData.append('file', attachment);
@@ -147,8 +166,11 @@ export const actions: Actions = {
 						});
 					}
 
+					form.data.oldAttachments?.push(data);
 					body.attachments.push(data.id);
 				}
+
+				form.data.attachments = undefined;
 			}
 
 			const response = await fetch(`${PUBLIC_API_URL}/problems/${id}`, {
@@ -258,15 +280,21 @@ export const actions: Actions = {
 		}
 
 		if (form.data.publicationStatus && form.data.publicationStatus !== currentPublicationStatus) {
+			const body: Record<string, string> = {
+				publicationStatus: form.data.publicationStatus
+			};
+
+			if (form.data.reviewComment && problemOwner !== event.locals.user.id) {
+				body.reviewComment = form.data.reviewComment;
+			}
+
 			const response = await fetch(`${PUBLIC_API_URL}/problems/${id}`, {
 				method: 'PATCH',
 				headers: {
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${event.locals.token}`
 				},
-				body: JSON.stringify({
-					publicationStatus: form.data.publicationStatus
-				})
+				body: JSON.stringify(body)
 			});
 
 			const data = await response.json();
@@ -363,6 +391,13 @@ export const actions: Actions = {
 						form
 					});
 				}
+			}
+
+			if (
+				currentPublicationStatus === PublicationStatus.Draft &&
+				data.publicationStatus === PublicationStatus.AwaitingApproval
+			) {
+				form.data.reviewComment = undefined;
 			}
 		}
 

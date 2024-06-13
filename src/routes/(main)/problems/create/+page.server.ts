@@ -208,6 +208,6 @@ export const actions: Actions = {
 			}
 		}
 
-		redirect(302, `${base}/problems/${data.id}`);
+		redirect(302, `${base}/problems/${data.id}/edit`);
 	}
 };

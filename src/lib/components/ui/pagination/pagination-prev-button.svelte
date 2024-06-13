@@ -18,8 +18,7 @@
 		class={cn('gap-1 pl-2.5', className)}
 		builders={[builder]}
 		on:click
-		{...$$restProps}
-	>
+		{...$$restProps}>
 		<slot>
 			<ChevronLeft class="h-4 w-4" />
 			<span>Previous</span>

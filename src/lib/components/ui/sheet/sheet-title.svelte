@@ -11,7 +11,6 @@
 
 <SheetPrimitive.Title
 	class={cn('text-lg font-semibold text-foreground', className)}
-	{...$$restProps}
->
+	{...$$restProps}>
 	<slot />
 </SheetPrimitive.Title>
