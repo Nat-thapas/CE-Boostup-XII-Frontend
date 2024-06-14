@@ -84,7 +84,6 @@ export const actions: Actions = {
 
 		if (!response.ok) {
 			const data = await response.json();
-			console.log(data);
 			let errorMessage: string | string[] | undefined;
 			if (data.errors) {
 				for (const key in data.errors) {
@@ -164,7 +163,6 @@ export const actions: Actions = {
 
 		if (!response.ok) {
 			const data = await response.json();
-			console.log(data);
 			let errorMessage: string | string[] | undefined;
 			if (data.errors) {
 				for (const key in data.errors) {

@@ -2,8 +2,10 @@ import { fail } from '@sveltejs/kit';
 import { message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
-import { PUBLIC_API_URL } from '$env/static/public';
+import { base } from '$app/paths';
+import { PUBLIC_API_URL, PUBLIC_ORIGIN } from '$env/static/public';
 
+import { parseBaseUrl } from '$lib/parse-base-url';
 import { formSchema } from '$lib/schemas/reset.schema';
 
 import type { Actions, PageServerLoad } from './$types';
@@ -31,8 +33,7 @@ export const actions: Actions = {
 			},
 			body: JSON.stringify({
 				email: form.data.email,
-				//siteUrl: `${PUBLIC_ORIGIN}${parseBaseUrl(event.url.pathname, base)}`  TODO: Fix this
-				siteUrl: 'https://localhostapparentlydoesnotwork.com/grader/v2'
+				siteUrl: `${PUBLIC_ORIGIN}${parseBaseUrl(event.url.pathname, base)}`
 			})
 		});
 

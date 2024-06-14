@@ -119,6 +119,7 @@
 				return 'Group deleted successfully!';
 			},
 			error: (err) => {
+				console.error(err);
 				editGroupDialogOpen = false;
 				invalidateAll();
 				return `Failed to delete group: ${err instanceof Error ? err.message : 'Unknown error'}`;
