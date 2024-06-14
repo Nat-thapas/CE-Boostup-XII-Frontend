@@ -12,7 +12,7 @@
 	export let user: User;
 
 	// eslint-disable-next-line no-undef
-	function handleMessage(event: CustomEvent<App.Superforms.Message>) {
+	function handleMessage(event: CustomEvent<App.Superforms.Message>): void {
 		if (event.detail?.type === 'success') {
 			open = false;
 		}

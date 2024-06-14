@@ -100,7 +100,7 @@
 
 	let waiting = false;
 
-	async function run() {
+	async function run(): Promise<void> {
 		const release = await mutex.acquire();
 		waiting = true;
 
@@ -301,8 +301,7 @@
 						{#each testcases as { id, input, output, time, memory }, i (id)}
 							<div
 								class="rounded-lg bg-muted p-2"
-								in:fade={{ duration: fadeDuration }}
-								out:fade={{ duration: fadeDuration }}
+								transition:fade={{ duration: fadeDuration }}
 								animate:flip={{ duration: flipDuration }}>
 								<Testcase
 									number={i + 1}

@@ -1,7 +1,7 @@
 export function setSearchParams(
 	search: string,
 	params: Record<string, string | number | null | undefined>
-) {
+): string {
 	const url = new URLSearchParams(search);
 	for (const [key, value] of Object.entries(params)) {
 		if (value === undefined) {

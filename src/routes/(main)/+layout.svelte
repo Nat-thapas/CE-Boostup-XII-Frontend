@@ -23,7 +23,7 @@
 
 	let editProfileSheetOpen = false;
 
-	function logout() {
+	function logout(): void {
 		fetch(`${base}/auth/logout`, { method: 'POST' }).then(() => {
 			toast.success('Logged out successfully');
 			goto(`${base}/auth/login`);

@@ -23,27 +23,15 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		}
 	});
 
-	let code: string | undefined;
-
-	const saveResponse = await saveResponsePromise;
-	if (saveResponse.ok) {
-		const save = (await saveResponse.json()) as Save;
-		code = save.code;
-	}
-
 	const problemResponse = await problemResponsePromise;
 	if (!problemResponse.ok) {
 		error(404, 'Problem not found');
 	}
 
-	const problem = (await problemResponse.json()) as Problem;
-
-	if (code === undefined) {
-		code = problem.starterCode ?? '';
-	}
+	const saveResponse = await saveResponsePromise;
 
 	return {
-		problem,
-		code
+		problem: (await problemResponse.json()) as Problem,
+		save: saveResponse.ok ? ((await saveResponse.json()) as Save) : undefined
 	};
 };

@@ -4,8 +4,8 @@
 		ArrowUp,
 		ChevronDown,
 		CirclePlus,
-		Pencil,
 		Plus,
+		Save,
 		Search,
 		Trash2
 	} from 'lucide-svelte';
@@ -27,6 +27,7 @@
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import * as Pagination from '$lib/components/ui/pagination';
+	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import * as Select from '$lib/components/ui/select';
 	import User from '$lib/components/user/User.svelte';
 	import { Role } from '$lib/enums/role.enum';
@@ -164,7 +165,7 @@
 		}
 	}
 
-	async function deleteUser(id: string) {
+	function deleteUser(id: string): void {
 		const requestPromise = sendDeleteUserRequest(id);
 
 		toast.promise(requestPromise, {
@@ -175,6 +176,7 @@
 				return 'User deleted successfully!';
 			},
 			error: (err) => {
+				console.error(err);
 				editUserDialogOpen = false;
 				invalidateAll();
 				return `Failed to delete user: ${err instanceof Error ? err.message : 'Unknown error'}`;
@@ -192,6 +194,8 @@
 		<Dialog.Header>
 			<Dialog.Title>สร้างผู้ใช้</Dialog.Title>
 			<Dialog.Description></Dialog.Description>
+		</Dialog.Header>
+		<ScrollArea class="max-h-[75vh]">
 			<form method="POST" action="?/create_user" use:createUserEnhance class="space-y-4 px-2">
 				<Form.Field form={createUserForm} name="displayName">
 					<Form.Control let:attrs>
@@ -240,7 +244,7 @@
 						<Select.Root
 							selected={selectedCreateUserGroup}
 							onSelectedChange={(v) => {
-								v && ($createUserFormData.group = v.value);
+								if (v) $createUserFormData.group = v.value;
 							}}>
 							<Select.Trigger {...attrs}>
 								<Select.Value placeholder="Select a group" />
@@ -289,7 +293,7 @@
 					<p>สร้าง</p>
 				</Form.Button>
 			</form>
-		</Dialog.Header>
+		</ScrollArea>
 	</Dialog.Content>
 </Dialog.Root>
 
@@ -298,6 +302,8 @@
 		<Dialog.Header>
 			<Dialog.Title>แก้ไขผู้ใช้</Dialog.Title>
 			<Dialog.Description></Dialog.Description>
+		</Dialog.Header>
+		<ScrollArea class="max-h-[75vh]">
 			<form
 				method="POST"
 				action="?/edit_user"
@@ -343,7 +349,6 @@
 									{roles[role]}
 								</Form.Label>
 							</div>
-
 							<input hidden type="checkbox" name={attrs.name} value={role} {checked} />
 						</Form.Control>
 					{/each}
@@ -355,7 +360,7 @@
 						<Select.Root
 							selected={selectedEditUserGroup}
 							onSelectedChange={(v) => {
-								v && ($editUserFormData.group = v.value);
+								if (v) $editUserFormData.group = v.value;
 							}}>
 							<Select.Trigger {...attrs}>
 								<Select.Value placeholder="Select a group" />
@@ -446,12 +451,12 @@
 						</AlertDialog.Content>
 					</AlertDialog.Root>
 					<Form.Button class="flex w-0 flex-grow items-center space-x-2">
-						<Pencil />
-						<p>แก้ไข</p>
+						<Save />
+						<p>Save</p>
 					</Form.Button>
 				</div>
 			</form>
-		</Dialog.Header>
+		</ScrollArea>
 	</Dialog.Content>
 </Dialog.Root>
 

@@ -1,18 +1,23 @@
 <script lang="ts">
-	import { BookText, FileCog, UserRound, UsersRound } from 'lucide-svelte';
+	import { BookText, Braces, Hash, UserRound, UsersRound } from 'lucide-svelte';
 
 	import { base } from '$app/paths';
 
 	const pages = [
 		{
-			name: 'Run code',
+			name: 'Run Code',
 			href: `${base}/compile-and-run`,
-			icon: FileCog
+			icon: Braces
 		},
 		{
 			name: 'Problems',
 			href: `${base}/problems`,
 			icon: BookText
+		},
+		{
+			name: 'Result Codes',
+			href: `${base}/result-codes`,
+			icon: Hash
 		},
 		{
 			name: 'Groups',
@@ -33,7 +38,7 @@
 
 <h1 class="mx-8 mt-8 text-3xl font-semibold">Dashboard</h1>
 <h2 class="mx-8 mb-8 text-lg font-normal text-muted-foreground">
-	I have no idea what to put here so deal with it
+	Use the breadcrumbs above to navigate back
 </h2>
 <div class="flex flex-wrap justify-evenly gap-8 px-8">
 	{#each pages as { name, href, icon }}

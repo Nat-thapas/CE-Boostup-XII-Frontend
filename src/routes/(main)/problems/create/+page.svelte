@@ -69,7 +69,9 @@
 
 		onResult({ result }) {
 			if (result.type === 'redirect') {
-				toast.success('Problem created successfully. Redirecting you to the problem page...');
+				toast.success('Problem created successfully', {
+					description: 'You will be redirected to the problem edit page'
+				});
 			}
 		},
 
@@ -159,7 +161,7 @@
 
 	let waiting = false;
 
-	async function testExamples() {
+	async function testExamples(): Promise<void> {
 		const release = await mutex.acquire();
 		waiting = true;
 
@@ -231,7 +233,7 @@
 		}
 	}
 
-	async function testTestcases() {
+	async function testTestcases(): Promise<void> {
 		const release = await mutex.acquire();
 		waiting = true;
 
@@ -328,7 +330,7 @@
 		return responseData;
 	}
 
-	async function addNewTag() {
+	function addNewTag(): void {
 		if (!newTagName) {
 			toast.error('Tag name cannot be empty');
 			return;
@@ -349,6 +351,7 @@
 				return 'New tag added successfully!';
 			},
 			error: (err) => {
+				console.error(err);
 				return `Failed to add new tag: ${err instanceof Error ? err.message : 'Unknown error'}`;
 			}
 		});
@@ -356,7 +359,7 @@
 
 	let newBannedFunction: string = '';
 
-	function addNewBannedFunction() {
+	function addNewBannedFunction(): void {
 		if (!newBannedFunction) {
 			toast.error('Function name cannot be empty');
 			return;
@@ -376,7 +379,7 @@
 
 	let newAllowedHeader: string = '';
 
-	function addNewAllowedHeader() {
+	function addNewAllowedHeader(): void {
 		if (!newAllowedHeader) {
 			toast.error('Header name cannot be empty');
 			return;
@@ -940,8 +943,7 @@
 								{#each examples as { id, input, output, passed, errCode, time, memory }, i (id)}
 									<div
 										class="rounded-lg bg-muted p-2"
-										in:fade={{ duration: fadeDuration }}
-										out:fade={{ duration: fadeDuration }}
+										transition:fade={{ duration: fadeDuration }}
 										animate:flip={{ duration: flipDuration }}>
 										<EditableTestcase
 											number={i + 1}
@@ -1003,8 +1005,7 @@
 								{#each testcases as { id, input, output, passed, errCode, time, memory }, i (id)}
 									<div
 										class="rounded-lg bg-muted p-2"
-										in:fade={{ duration: fadeDuration }}
-										out:fade={{ duration: fadeDuration }}
+										transition:fade={{ duration: fadeDuration }}
 										animate:flip={{ duration: flipDuration }}>
 										<EditableTestcase
 											number={i + 1}

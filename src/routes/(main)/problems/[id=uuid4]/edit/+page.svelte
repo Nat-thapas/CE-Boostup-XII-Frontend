@@ -170,7 +170,7 @@
 
 	let waiting = false;
 
-	async function testExamples() {
+	async function testExamples(): Promise<void> {
 		const release = await mutex.acquire();
 		waiting = true;
 
@@ -241,7 +241,7 @@
 		}
 	}
 
-	async function testTestcases() {
+	async function testTestcases(): Promise<void> {
 		const release = await mutex.acquire();
 		waiting = true;
 
@@ -337,7 +337,7 @@
 		return responseData;
 	}
 
-	async function addNewTag() {
+	function addNewTag(): void {
 		if (!newTagName) {
 			toast.error('Tag name cannot be empty');
 			return;
@@ -358,6 +358,7 @@
 				return 'New tag added successfully!';
 			},
 			error: (err) => {
+				console.error(err);
 				return `Failed to add new tag: ${err instanceof Error ? err.message : 'Unknown error'}`;
 			}
 		});
@@ -365,7 +366,7 @@
 
 	let newBannedFunction: string = '';
 
-	function addNewBannedFunction() {
+	function addNewBannedFunction(): void {
 		if (!newBannedFunction) {
 			toast.error('Function name cannot be empty');
 			return;
@@ -385,7 +386,7 @@
 
 	let newAllowedHeader: string = '';
 
-	function addNewAllowedHeader() {
+	function addNewAllowedHeader(): void {
 		if (!newAllowedHeader) {
 			toast.error('Header name cannot be empty');
 			return;
@@ -420,7 +421,7 @@
 		}
 	}
 
-	async function deleteProblem() {
+	function deleteProblem(): void {
 		const requestPromise = sendDeleteRequest();
 		toast.promise(requestPromise, {
 			loading: 'Deleting problem...',
@@ -429,6 +430,7 @@
 				return 'Problem deleted successfully!';
 			},
 			error: (err) => {
+				console.error(err);
 				invalidateAll();
 				return `Failed to delete problem: ${err instanceof Error ? err.message : 'Unknown error'}`;
 			}
@@ -437,32 +439,32 @@
 
 	const attachments = filesProxy(form, 'attachments');
 
-	function submitProblemForReview() {
+	function submitProblemForReview(): void {
 		$formData.publicationStatus = PublicationStatus.AwaitingApproval;
 		form.submit();
 	}
 
-	function revertProblemToDraft() {
+	function revertProblemToDraft(): void {
 		$formData.publicationStatus = PublicationStatus.Draft;
 		form.submit();
 	}
 
-	function approveProblem() {
+	function approveProblem(): void {
 		$formData.publicationStatus = PublicationStatus.Approved;
 		form.submit();
 	}
 
-	function rejectProblem() {
+	function rejectProblem(): void {
 		$formData.publicationStatus = PublicationStatus.Rejected;
 		form.submit();
 	}
 
-	function publishProblem() {
+	function publishProblem(): void {
 		$formData.publicationStatus = PublicationStatus.Published;
 		form.submit();
 	}
 
-	function archiveProblem() {
+	function archiveProblem(): void {
 		$formData.publicationStatus = PublicationStatus.Archived;
 		form.submit();
 	}
@@ -512,7 +514,8 @@
 					}
 				}}
 				disabled={data.problem.publicationStatus !== PublicationStatus.Draft ||
-					data.user.id !== data.problem.owner?.id}>
+					(data.user.id !== data.problem.owner?.id &&
+						!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}>
 				<Select.Trigger class="w-32 flex-grow">
 					<Select.Value placeholder="Language" />
 				</Select.Trigger>
@@ -531,7 +534,8 @@
 					}
 				}}
 				disabled={data.problem.publicationStatus !== PublicationStatus.Draft ||
-					data.user.id !== data.problem.owner?.id}>
+					(data.user.id !== data.problem.owner?.id &&
+						!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}>
 				<Select.Trigger class="w-28 flex-grow">
 					<Select.Value placeholder="Optimization" />
 				</Select.Trigger>
@@ -633,9 +637,11 @@
 									<Input
 										{...attrs}
 										bind:value={$formData.title}
-										readonly={data.user.id !== data.problem.owner?.id}
+										readonly={data.user.id !== data.problem.owner?.id &&
+											!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin])}
 										disabled={data.problem.publicationStatus !== PublicationStatus.Draft &&
-											data.user.id === data.problem.owner?.id} />
+											(data.user.id === data.problem.owner?.id ||
+												isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))} />
 								</Form.Control>
 								<Form.FieldErrors />
 							</Form.Field>
@@ -649,9 +655,11 @@
 									<Textarea
 										{...attrs}
 										bind:value={$formData.description}
-										readonly={data.user.id !== data.problem.owner?.id}
+										readonly={data.user.id !== data.problem.owner?.id &&
+											!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin])}
 										disabled={data.problem.publicationStatus !== PublicationStatus.Draft &&
-											data.user.id === data.problem.owner?.id}
+											(data.user.id === data.problem.owner?.id ||
+												isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}
 										class="resize-none" />
 								</Form.Control>
 								<Form.FieldErrors />
@@ -665,9 +673,11 @@
 									<Textarea
 										{...attrs}
 										bind:value={$formData.input}
-										readonly={data.user.id !== data.problem.owner?.id}
+										readonly={data.user.id !== data.problem.owner?.id &&
+											!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin])}
 										disabled={data.problem.publicationStatus !== PublicationStatus.Draft &&
-											data.user.id === data.problem.owner?.id}
+											(data.user.id === data.problem.owner?.id ||
+												isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}
 										class="resize-none" />
 								</Form.Control>
 								<Form.FieldErrors />
@@ -682,9 +692,11 @@
 									<Textarea
 										{...attrs}
 										bind:value={$formData.output}
-										readonly={data.user.id !== data.problem.owner?.id}
+										readonly={data.user.id !== data.problem.owner?.id &&
+											!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin])}
 										disabled={data.problem.publicationStatus !== PublicationStatus.Draft &&
-											data.user.id === data.problem.owner?.id}
+											(data.user.id === data.problem.owner?.id ||
+												isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}
 										class="resize-none" />
 								</Form.Control>
 								<Form.FieldErrors />
@@ -695,9 +707,11 @@
 									<Textarea
 										{...attrs}
 										bind:value={$formData.hint}
-										readonly={data.user.id !== data.problem.owner?.id}
+										readonly={data.user.id !== data.problem.owner?.id &&
+											!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin])}
 										disabled={data.problem.publicationStatus !== PublicationStatus.Draft &&
-											data.user.id === data.problem.owner?.id}
+											(data.user.id === data.problem.owner?.id ||
+												isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}
 										class="resize-none" />
 								</Form.Control>
 								<Form.FieldErrors />
@@ -710,10 +724,11 @@
 										{...attrs}
 										bind:value={$formData.hintCost}
 										inputmode="numeric"
-										readonly={data.user.id !== data.problem.owner?.id}
-										disabled={(!$formData.hint ||
-											data.problem.publicationStatus !== PublicationStatus.Draft) &&
-											data.user.id === data.problem.owner?.id} />
+										readonly={data.user.id !== data.problem.owner?.id &&
+											!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin])}
+										disabled={data.problem.publicationStatus !== PublicationStatus.Draft &&
+											(data.user.id === data.problem.owner?.id ||
+												isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))} />
 								</Form.Control>
 								<Form.FieldErrors />
 							</Form.Field>
@@ -740,7 +755,8 @@
 															$formData.difficulty = i + 1;
 														}}
 														disabled={data.problem.publicationStatus !== PublicationStatus.Draft ||
-															data.user.id !== data.problem.owner?.id}
+															(data.user.id !== data.problem.owner?.id &&
+																!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}
 														class:cursor-no={data.problem.publicationStatus !==
 															PublicationStatus.Draft}>
 														<Star
@@ -763,9 +779,11 @@
 										<Input
 											{...attrs}
 											bind:value={$formData.score}
-											readonly={data.user.id !== data.problem.owner?.id}
+											readonly={data.user.id !== data.problem.owner?.id &&
+												!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin])}
 											disabled={data.problem.publicationStatus !== PublicationStatus.Draft &&
-												data.user.id === data.problem.owner?.id}
+												(data.user.id === data.problem.owner?.id ||
+													isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}
 											inputmode="numeric" />
 									</Form.Control>
 									<Form.FieldErrors />
@@ -799,7 +817,8 @@
 														}
 													}}
 													disabled={data.problem.publicationStatus !== PublicationStatus.Draft ||
-														data.user.id !== data.problem.owner?.id} />
+														(data.user.id !== data.problem.owner?.id &&
+															!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))} />
 												<Form.Label class="font-normal">
 													{tag.name}
 												</Form.Label>
@@ -816,16 +835,19 @@
 													addNewTag();
 												}
 											}}
-											readonly={data.user.id !== data.problem.owner?.id}
+											readonly={data.user.id !== data.problem.owner?.id &&
+												!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin])}
 											disabled={data.problem.publicationStatus !== PublicationStatus.Draft &&
-												data.user.id === data.problem.owner?.id}
+												(data.user.id === data.problem.owner?.id ||
+													isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}
 											placeholder="เพิ่มเนื้อหา"
 											class="flex h-9 w-full rounded-md rounded-r-none border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" />
 										<Button
 											size="sm"
 											on:click={addNewTag}
 											disabled={data.problem.publicationStatus !== PublicationStatus.Draft ||
-												data.user.id !== data.problem.owner?.id}
+												(data.user.id !== data.problem.owner?.id &&
+													!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}
 											class="rounded-l-none">
 											<Plus />
 										</Button>
@@ -857,7 +879,9 @@
 																	: [];
 															}}
 															disabled={data.problem.publicationStatus !==
-																PublicationStatus.Draft || data.user.id !== data.problem.owner?.id}>
+																PublicationStatus.Draft ||
+																(data.user.id !== data.problem.owner?.id &&
+																	!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}>
 															<X size={28} class="p-2" />
 														</button>
 														<input
@@ -880,17 +904,19 @@
 													addNewAllowedHeader();
 												}
 											}}
-											readonly={data.user.id !== data.problem.owner?.id}
-											disabled={(!!$formData.allowAllHeaders ||
-												data.problem.publicationStatus !== PublicationStatus.Draft) &&
-												data.user.id === data.problem.owner?.id}
+											readonly={data.user.id !== data.problem.owner?.id &&
+												!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin])}
+											disabled={data.problem.publicationStatus !== PublicationStatus.Draft &&
+												(data.user.id === data.problem.owner?.id ||
+													isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}
 											placeholder="เพิ่ม Header ที่อนุญาต"
 											class="flex h-9 w-full rounded-md rounded-r-none border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" />
 										<Button
 											size="sm"
 											on:click={addNewAllowedHeader}
 											disabled={data.problem.publicationStatus !== PublicationStatus.Draft ||
-												data.user.id !== data.problem.owner?.id}
+												(data.user.id !== data.problem.owner?.id &&
+													!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}
 											class="rounded-l-none">
 											<Plus />
 										</Button>
@@ -905,7 +931,8 @@
 											{...attrs}
 											bind:checked={$formData.allowAllHeaders}
 											disabled={data.problem.publicationStatus !== PublicationStatus.Draft ||
-												data.user.id !== data.problem.owner?.id} />
+												(data.user.id !== data.problem.owner?.id &&
+													!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))} />
 										<div>
 											<Form.Label>อนุญาติให้ใช้ Header ทั้งหมด</Form.Label>
 											<Form.Description>
@@ -939,7 +966,8 @@
 																: [];
 														}}
 														disabled={data.problem.publicationStatus !== PublicationStatus.Draft ||
-															data.user.id !== data.problem.owner?.id}>
+															(data.user.id !== data.problem.owner?.id &&
+																!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}>
 														<X size={28} class="p-2" />
 													</button>
 													<input
@@ -961,16 +989,19 @@
 													addNewBannedFunction();
 												}
 											}}
-											readonly={data.user.id !== data.problem.owner?.id}
+											readonly={data.user.id !== data.problem.owner?.id &&
+												!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin])}
 											disabled={data.problem.publicationStatus !== PublicationStatus.Draft &&
-												data.user.id === data.problem.owner?.id}
+												(data.user.id === data.problem.owner?.id ||
+													isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}
 											placeholder="เพิ่ม Function ที่ห้ามใช้"
 											class="flex h-9 w-full rounded-md rounded-r-none border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" />
 										<Button
 											size="sm"
 											on:click={addNewBannedFunction}
 											disabled={data.problem.publicationStatus !== PublicationStatus.Draft ||
-												data.user.id !== data.problem.owner?.id}
+												(data.user.id !== data.problem.owner?.id &&
+													!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}
 											class="rounded-l-none">
 											<Plus />
 										</Button>
@@ -987,9 +1018,11 @@
 											<Input
 												{...attrs}
 												bind:value={$formData.timeLimit}
-												readonly={data.user.id !== data.problem.owner?.id}
+												readonly={data.user.id !== data.problem.owner?.id &&
+													!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin])}
 												disabled={data.problem.publicationStatus !== PublicationStatus.Draft &&
-													data.user.id === data.problem.owner?.id} />
+													(data.user.id === data.problem.owner?.id ||
+														isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))} />
 										</Form.Control>
 										<Form.FieldErrors />
 									</Form.Field>
@@ -1002,9 +1035,11 @@
 											<Input
 												{...attrs}
 												bind:value={$formData.memoryLimit}
-												readonly={data.user.id !== data.problem.owner?.id}
+												readonly={data.user.id !== data.problem.owner?.id &&
+													!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin])}
 												disabled={data.problem.publicationStatus !== PublicationStatus.Draft &&
-													data.user.id === data.problem.owner?.id} />
+													(data.user.id === data.problem.owner?.id ||
+														isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))} />
 										</Form.Control>
 										<Form.FieldErrors />
 									</Form.Field>
@@ -1032,7 +1067,8 @@
 													class:cursor-no={data.problem.publicationStatus !==
 														PublicationStatus.Draft}
 													disabled={data.problem.publicationStatus !== PublicationStatus.Draft ||
-														data.user.id !== data.problem.owner?.id}>
+														(data.user.id !== data.problem.owner?.id &&
+															!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}>
 													<X size={24} class="mr-2 p-1" />
 												</button>
 											</div>
@@ -1044,7 +1080,8 @@
 										multiple
 										bind:files={$attachments}
 										disabled={data.problem.publicationStatus !== PublicationStatus.Draft ||
-											data.user.id !== data.problem.owner?.id} />
+											(data.user.id !== data.problem.owner?.id &&
+												!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))} />
 								</Form.Control>
 								<Form.FieldErrors />
 							</Form.Field>
@@ -1057,9 +1094,11 @@
 									<Input
 										{...attrs}
 										bind:value={$formData.credits}
-										readonly={data.user.id !== data.problem.owner?.id}
+										readonly={data.user.id !== data.problem.owner?.id &&
+											!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin])}
 										disabled={data.problem.publicationStatus !== PublicationStatus.Draft &&
-											data.user.id === data.problem.owner?.id} />
+											(data.user.id === data.problem.owner?.id ||
+												isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))} />
 								</Form.Control>
 								<Form.FieldErrors />
 							</Form.Field>
@@ -1150,6 +1189,7 @@
 												? 'Write your comment here'
 												: ''}
 											readonly={data.user.id === data.problem.owner?.id ||
+												!isSomeRolesIn(data.user.roles ?? [], [Role.Reviewer]) ||
 												data.problem.publicationStatus !== PublicationStatus.AwaitingApproval}
 											class="h-32 w-full resize-none rounded-lg" />
 									</Form.Control>
@@ -1163,7 +1203,8 @@
 											builders={[builder]}
 											variant="destructive"
 											class="flex h-10 w-10 items-center justify-center p-0"
-											disabled={data.user.id !== data.problem.owner?.id}>
+											disabled={data.user.id !== data.problem.owner?.id &&
+												!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin])}>
 											<Trash2 />
 										</Button>
 									</AlertDialog.Trigger>
@@ -1181,7 +1222,7 @@
 									</AlertDialog.Content>
 								</AlertDialog.Root>
 								{#if data.problem.publicationStatus === PublicationStatus.Draft}
-									{#if data.user.id === data.problem.owner?.id}
+									{#if data.user.id === data.problem.owner?.id || isSomeRolesIn( data.user.roles ?? [], [Role.SuperAdmin] )}
 										<Form.Button class="flex w-0 flex-grow items-center space-x-2">
 											<Save />
 											<p>Save</p>
@@ -1221,7 +1262,7 @@
 										</Button>
 									{/if}
 								{:else if data.problem.publicationStatus === PublicationStatus.AwaitingApproval}
-									{#if data.user.id === data.problem.owner?.id}
+									{#if data.user.id === data.problem.owner?.id || (isSomeRolesIn( data.user.roles ?? [], [Role.SuperAdmin] ) && !isSomeRolesIn( data.user.roles ?? [], [Role.Reviewer] ))}
 										<AlertDialog.Root>
 											<AlertDialog.Trigger asChild let:builder>
 												<Button
@@ -1308,7 +1349,7 @@
 										</Button>
 									{/if}
 								{:else if data.problem.publicationStatus === PublicationStatus.Approved}
-									{#if data.user.id === data.problem.owner?.id}
+									{#if data.user.id === data.problem.owner?.id || isSomeRolesIn( data.user.roles ?? [], [Role.SuperAdmin] )}
 										<AlertDialog.Root>
 											<AlertDialog.Trigger asChild let:builder>
 												<Button
@@ -1368,7 +1409,7 @@
 										</Button>
 									{/if}
 								{:else if data.problem.publicationStatus === PublicationStatus.Rejected}
-									{#if data.user.id === data.problem.owner?.id}
+									{#if data.user.id === data.problem.owner?.id || isSomeRolesIn( data.user.roles ?? [], [Role.SuperAdmin] )}
 										<AlertDialog.Root>
 											<AlertDialog.Trigger asChild let:builder>
 												<Button
@@ -1403,7 +1444,7 @@
 										</Button>
 									{/if}
 								{:else if data.problem.publicationStatus === PublicationStatus.Published}
-									{#if data.user.id === data.problem.owner?.id}
+									{#if data.user.id === data.problem.owner?.id || isSomeRolesIn( data.user.roles ?? [], [Role.SuperAdmin] )}
 										<AlertDialog.Root>
 											<AlertDialog.Trigger asChild let:builder>
 												<Button
@@ -1434,7 +1475,7 @@
 										</Button>
 									{/if}
 								{:else if data.problem.publicationStatus === PublicationStatus.Archived}
-									{#if data.user.id === data.problem.owner?.id}
+									{#if data.user.id === data.problem.owner?.id || isSomeRolesIn( data.user.roles ?? [], [Role.SuperAdmin] )}
 										<Button disabled class="flex w-0 flex-grow items-center space-x-2">
 											<Archive />
 											<p>Archived</p>
@@ -1458,7 +1499,8 @@
 						<Button
 							disabled={examples.length >= 16 ||
 								data.problem.publicationStatus !== PublicationStatus.Draft ||
-								data.user.id !== data.problem.owner?.id}
+								(data.user.id !== data.problem.owner?.id &&
+									!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}
 							on:click={() => {
 								examples = [
 									...examples,
@@ -1495,8 +1537,7 @@
 								{#each examples as { id, input, output, passed, errCode, time, memory }, i (id)}
 									<div
 										class="rounded-lg bg-muted p-2"
-										in:fade={{ duration: fadeDuration }}
-										out:fade={{ duration: fadeDuration }}
+										transition:fade={{ duration: fadeDuration }}
 										animate:flip={{ duration: flipDuration }}>
 										<EditableTestcase
 											number={i + 1}
@@ -1510,9 +1551,11 @@
 											on:exitButtonClicked={() => {
 												examples = examples.filter((testcase) => testcase.id !== id);
 											}}
-											readonly={data.user.id !== data.problem.owner?.id}
+											readonly={data.user.id !== data.problem.owner?.id &&
+												!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin])}
 											disabled={data.problem.publicationStatus !== PublicationStatus.Draft &&
-												data.user.id === data.problem.owner?.id} />
+												(data.user.id === data.problem.owner?.id ||
+													isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))} />
 									</div>
 								{/each}
 							</div>
@@ -1526,7 +1569,8 @@
 						<Button
 							disabled={testcases.length >= 64 ||
 								data.problem.publicationStatus !== PublicationStatus.Draft ||
-								data.user.id !== data.problem.owner?.id}
+								(data.user.id !== data.problem.owner?.id &&
+									!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}
 							on:click={() => {
 								testcases = [
 									...testcases,
@@ -1563,8 +1607,7 @@
 								{#each testcases as { id, input, output, passed, errCode, time, memory }, i (id)}
 									<div
 										class="rounded-lg bg-muted p-2"
-										in:fade={{ duration: fadeDuration }}
-										out:fade={{ duration: fadeDuration }}
+										transition:fade={{ duration: fadeDuration }}
 										animate:flip={{ duration: flipDuration }}>
 										<EditableTestcase
 											number={i + 1}
@@ -1582,9 +1625,11 @@
 												}
 												testcases = testcases.filter((testcase) => testcase.id !== id);
 											}}
-											readonly={data.user.id !== data.problem.owner?.id}
+											readonly={data.user.id !== data.problem.owner?.id &&
+												!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin])}
 											disabled={data.problem.publicationStatus !== PublicationStatus.Draft &&
-												data.user.id === data.problem.owner?.id} />
+												(data.user.id === data.problem.owner?.id ||
+													isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))} />
 									</div>
 								{/each}
 							</div>

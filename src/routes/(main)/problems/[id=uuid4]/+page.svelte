@@ -3,7 +3,19 @@
 	import { githubLight } from '@uiw/codemirror-theme-github';
 	import { vscodeDark } from '@uiw/codemirror-theme-vscode';
 	import { Mutex } from 'async-mutex';
-	import { CirclePlay, Lightbulb, LoaderCircle, Pencil, Plus, Upload } from 'lucide-svelte';
+	import {
+		BookText,
+		Circle,
+		CircleCheck,
+		CircleCheckBig,
+		CircleDot,
+		CirclePlay,
+		Lightbulb,
+		LoaderCircle,
+		Pencil,
+		Plus,
+		Upload
+	} from 'lucide-svelte';
 	import { mode } from 'mode-watcher';
 	import { onMount } from 'svelte';
 	import CodeMirror from 'svelte-codemirror-editor';
@@ -11,6 +23,7 @@
 	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
 
+	import { invalidateAll } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { PUBLIC_API_URL } from '$env/static/public';
 
@@ -24,14 +37,18 @@
 	import { ScrollArea } from '$lib/components/ui/scroll-area';
 	import * as Select from '$lib/components/ui/select';
 	import * as Tabs from '$lib/components/ui/tabs';
+	import { CompletionStatus } from '$lib/enums/completion-status.enum';
 	import { PublicationStatus } from '$lib/enums/publication-status.enum';
+	import { ResultCode } from '$lib/enums/result-code.enum';
 	import { Role } from '$lib/enums/role.enum';
 	import { format } from '$lib/format-number';
 	import { isSomeRolesIn } from '$lib/roles';
 
+	import Error from '../../../+error.svelte';
 	import type { PageData } from './$types';
 
 	const mutex = new Mutex();
+	const saveMutex = new Mutex();
 	const fadeDuration = 200;
 	const flipDuration = 400;
 	const languages = [
@@ -62,7 +79,9 @@
 		label: language.toUpperCase()
 	};
 
-	let code = data.code;
+	let save = data.save;
+
+	let code = save && save.code ? save.code : data.problem.starterCode ?? '';
 
 	let examples: {
 		id: string;
@@ -93,7 +112,7 @@
 
 	let waiting = false;
 
-	async function testExamples() {
+	async function testExamples(): Promise<void> {
 		const release = await mutex.acquire();
 		waiting = true;
 
@@ -163,7 +182,7 @@
 		}
 	}
 
-	async function testTestcases() {
+	async function testTestcases(): Promise<void> {
 		const release = await mutex.acquire();
 		waiting = true;
 
@@ -232,25 +251,224 @@
 		}
 	});
 
+	let saving = false;
+
+	async function saveCode(): Promise<void> {
+		if (saveMutex.isLocked()) {
+			return;
+		}
+		const release = await saveMutex.acquire();
+		saving = true;
+		try {
+			if (!save) {
+				const response = await fetch(`${PUBLIC_API_URL}/saves`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${data.token}`
+					},
+					body: JSON.stringify({
+						problem: data.problem.id,
+						code,
+						language
+					})
+				});
+
+				if (!response.ok) {
+					toast.error('Failed to save the code');
+					return;
+				}
+
+				save = await response.json();
+			} else {
+				const response = await fetch(`${PUBLIC_API_URL}/saves/${save.id}`, {
+					method: 'PATCH',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${data.token}`
+					},
+					body: JSON.stringify({
+						code,
+						language
+					})
+				});
+
+				if (!response.ok) {
+					toast.error('Failed to save the code');
+					return;
+				}
+
+				save = await response.json();
+			}
+		} finally {
+			saving = false;
+			release();
+		}
+	}
+
 	let hintDialogOpen = false;
 
-	function handleHintButtonClick() {
-		if (!data.problem.hint && data.problem.hintCost === 0) {
-			toast.error('No hint available');
+	async function sendUnlockHintRequest(): Promise<any> {
+		const response = await fetch(`${PUBLIC_API_URL}/problems/${data.problem.id}`, {
+			method: 'PATCH',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${data.token}`
+			},
+			body: JSON.stringify({
+				unlockHint: true
+			})
+		});
+
+		const responseData = await response.json();
+
+		if (!response.ok) {
+			throw new Error(
+				responseData.message instanceof Array
+					? responseData.message.join(', ')
+					: responseData.message
+			);
 		}
-		hintDialogOpen = true;
+
+		return responseData;
 	}
 
-	function handleSubmitButtonClick() {
-		toast.info('Submit button clicked'); // TODO
+	function unlockHint(): void {
+		const responsePromise = sendUnlockHintRequest();
+
+		toast.promise(responsePromise, {
+			loading: 'Unlocking hint...',
+			success: () => {
+				invalidateAll();
+				return 'Hint unlocked successfully!';
+			},
+			error: (err) => {
+				console.error(err);
+				return `Failed to unlock hint: ${err instanceof Error ? err.message : 'Unknown error'}`;
+			}
+		});
 	}
 
-	console.log(data.problem.allowedHeaders);
+	let submissionStatusDialogOpen = false;
+	let accepted = false;
+	let testcasesResultCode: ResultCode[] = [];
+
+	async function sendSubmitRequest(): Promise<any> {
+		const response = await fetch(`${PUBLIC_API_URL}/submissions`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${data.token}`
+			},
+			body: JSON.stringify({
+				problem: data.problem.id,
+				code,
+				language
+			})
+		});
+
+		const responseData = await response.json();
+
+		if (!response.ok) {
+			throw new Error(
+				responseData.message instanceof Array
+					? responseData.message.join(', ')
+					: responseData.message
+			);
+		}
+
+		return responseData;
+	}
+
+	function handleSubmitButtonClick(): void {
+		const responsePromise = sendSubmitRequest();
+
+		toast.promise(responsePromise, {
+			loading: 'Submitting...',
+			success: (responseData) => {
+				invalidateAll();
+				testcasesResultCode = responseData.outputCodes;
+				if (responseData.accepted) {
+					accepted = true;
+					submissionStatusDialogOpen = true;
+					return 'Submitted successfully. Submission accepted!';
+				} else {
+					accepted = false;
+					submissionStatusDialogOpen = true;
+					return 'Submitted successfully. Submission rejected';
+				}
+			},
+			error: (err) => {
+				console.error(err);
+				return `Failed to submit: ${err instanceof Error ? err.message : 'Unknown error'}`;
+			}
+		});
+	}
 </script>
 
 <svelte:head>
 	<title>CE Boostup XII - Problem - {data.problem.title}</title>
 </svelte:head>
+
+<Dialog.Root bind:open={submissionStatusDialogOpen}>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>
+				{#if accepted}
+					Submission Accepted!
+				{:else}
+					Submission Rejected
+				{/if}
+			</Dialog.Title>
+			<Dialog.Description>
+				<a href={`${base}/result-codes`} class="underline">Result codes explanation</a>
+			</Dialog.Description>
+		</Dialog.Header>
+		<p class="font-medium">Testcases result code</p>
+		<div class="mb-4 ml-2 flex flex-wrap gap-2">
+			{#each testcasesResultCode as c, i}
+				<div
+					class="flex h-8 items-center rounded-lg bg-muted px-3 text-sm"
+					class:bg-green={c === ResultCode.AC}
+					class:bg-gray={[ResultCode.IE, ResultCode.UE].includes(c)}
+					class:bg-yellow={[ResultCode.HNA, ResultCode.FNA].includes(c)}
+					class:bg-red={[
+						ResultCode.WA,
+						ResultCode.IR,
+						ResultCode.RE,
+						ResultCode.COLE,
+						ResultCode.CTLE,
+						ResultCode.CMLE,
+						ResultCode.OLE,
+						ResultCode.MLE,
+						ResultCode.TLE,
+						ResultCode.CE
+					].includes(c)}>
+					<p>{i + 1}. {c}</p>
+				</div>
+			{/each}
+		</div>
+		<Dialog.Footer>
+			<div class="flex items-center justify-end space-x-2">
+				{#if accepted}
+					<a
+						href={`${base}/problems`}
+						class="flex h-10 w-48 items-center justify-center space-x-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+						<BookText />
+						<p>Back to problems</p>
+					</a>
+				{/if}
+				<Button
+					on:click={() => {
+						submissionStatusDialogOpen = false;
+					}}
+					class="w-24">
+					OK
+				</Button>
+			</div>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>
 
 <Dialog.Root bind:open={hintDialogOpen}>
 	<Dialog.Content>
@@ -275,7 +493,7 @@
 		{/if}
 		{#if !data.problem.hint}
 			<Dialog.Footer>
-				<Button>Unlock</Button>
+				<Button on:click={unlockHint}>Unlock</Button>
 			</Dialog.Footer>
 		{/if}
 	</Dialog.Content>
@@ -302,7 +520,12 @@
 					{/each}
 				</Select.Content>
 			</Select.Root>
-			<Button class="flex w-0 flex-grow items-center space-x-2" on:click={handleHintButtonClick}>
+			<Button
+				class="flex w-0 flex-grow items-center space-x-2"
+				on:click={() => {
+					hintDialogOpen = true;
+				}}
+				disabled={!data.problem.hint && data.problem.hintCost === 0}>
 				<Lightbulb />
 				<p>Hint</p>
 			</Button>
@@ -336,15 +559,7 @@
 					fontSize: '0.875rem'
 				}
 			}}
-			on:change={() => {
-				try {
-					localStorage.setItem('code', code);
-				} catch (err) {
-					toast.error('Failed to save code to local storage', {
-						description: `Error: ${err instanceof Error ? err.message : 'Unknown error'}`
-					});
-				}
-			}} />
+			on:change={saveCode} />
 	</Resizable.Pane>
 	<Resizable.Handle withHandle />
 	<Resizable.Pane defaultSize={50} class="min-w-80 px-2">
@@ -357,7 +572,18 @@
 			<Tabs.Content value="details">
 				<div style="height: calc(100vh - 128px);">
 					<ScrollArea class="h-full pl-2 pr-4">
-						<h1 class="mb-2 text-2xl font-semibold">{data.problem.number}. {data.problem.title}</h1>
+						<div class="mb-2 flex items-center space-x-4">
+							<h1 class="text-2xl font-semibold">
+								{data.problem.number}. {data.problem.title}
+							</h1>
+							{#if data.problem.completionStatus === CompletionStatus.Solved}
+								<CircleCheck size={24} strokeWidth={2.5} color="#22c55e" />
+							{:else if data.problem.completionStatus === CompletionStatus.Attempted}
+								<CircleDot size={24} strokeWidth={2.5} color="#eab308" />
+							{:else}
+								<Circle size={24} strokeWidth={2.5} color="#737373" />
+							{/if}
+						</div>
 						<div class="mb-4 flex flex-wrap gap-2 py-1">
 							<div class="mr-2 flex h-8 w-fit items-center space-x-4 rounded-lg bg-muted px-4 py-1">
 								<Rating value={data.problem.difficulty ?? 0} size={20} />
@@ -461,14 +687,12 @@
 								{#each examples as { id, input, output, passed, errCode, time, memory }, i (id)}
 									<div
 										class="rounded-lg bg-muted p-2"
-										in:fade={{ duration: fadeDuration }}
-										out:fade={{ duration: fadeDuration }}
+										transition:fade={{ duration: fadeDuration }}
 										animate:flip={{ duration: flipDuration }}>
 										<EditableTestcase
 											number={i + 1}
 											bind:input
 											bind:output
-											error={{ input: 'fix this' }}
 											{passed}
 											{errCode}
 											{time}
@@ -503,32 +727,29 @@
 									}
 								];
 							}}
-							class="mt-2 flex w-0 flex-grow items-center space-x-2">
+							class="flex w-0 flex-grow items-center space-x-2">
 							<Plus />
 							<p>Add Testcase</p>
 						</Button>
 						{#if waiting}
-							<Button disabled class="mt-2 flex w-0 flex-grow items-center space-x-2">
+							<Button disabled class="flex w-0 flex-grow items-center space-x-2">
 								<LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
 								<p>Running...</p>
 							</Button>
 						{:else}
-							<Button
-								class="mt-2 flex w-0 flex-grow items-center space-x-2"
-								on:click={testTestcases}>
+							<Button class="flex w-0 flex-grow items-center space-x-2" on:click={testTestcases}>
 								<CirclePlay />
 								<p>Run</p>
 							</Button>
 						{/if}
 					</div>
-					<div style="height: calc(100vh - 128px);">
+					<div style="height: calc(100vh - 180px);">
 						<ScrollArea class="h-full pr-4">
 							<div class="space-y-2">
 								{#each testcases as { id, input, output, time, memory }, i (id)}
 									<div
 										class="rounded-lg bg-muted p-2"
-										in:fade={{ duration: fadeDuration }}
-										out:fade={{ duration: fadeDuration }}
+										transition:fade={{ duration: fadeDuration }}
 										animate:flip={{ duration: flipDuration }}>
 										<Testcase
 											number={i + 1}
@@ -550,17 +771,42 @@
 	</Resizable.Pane>
 </Resizable.PaneGroup>
 {#if data.user.id === data.problem?.owner?.id || (data.problem?.publicationStatus === PublicationStatus.AwaitingApproval && isSomeRolesIn( data.user.roles ?? [], [Role.Reviewer] )) || isSomeRolesIn( data.user.roles ?? [], [Role.SuperAdmin] )}
-	<a href={`${base}/problems/${data.problem.id}/edit`}>
-		<Button
-			class="fixed bottom-4 right-4 h-16 w-16 rounded-full p-4 transition-transform hover:scale-110">
+	<a href={`${base}/problems/${data.problem.id}/edit`} class="fixed bottom-4 right-4">
+		<Button class="h-16 w-16 rounded-full p-4 transition-transform hover:scale-110">
 			<Pencil size={32} />
 		</Button>
 	</a>
+{/if}
+{#if saving}
+	<div class="fixed bottom-1.5 left-2 flex items-center">
+		<LoaderCircle class="mb-0.5 mr-2 h-4 w-4 animate-spin opacity-50" />
+		<p class="text-sm opacity-50">Saving...</p>
+	</div>
+{:else}
+	<div class="fixed bottom-1.5 left-2 flex items-center">
+		<CircleCheckBig class="mb-0.5 mr-2 h-4 w-4 opacity-50" />
+		<p class="text-sm opacity-50">Saved</p>
+	</div>
 {/if}
 
 <style lang="postcss">
 	:global(.cm-line) {
 		font-family: 'Fira Code', monospace;
 		@apply text-sm xl:text-base;
+	}
+	.bg-green {
+		@apply bg-green-500 text-white dark:bg-green-600;
+	}
+
+	.bg-gray {
+		@apply bg-muted;
+	}
+
+	.bg-yellow {
+		@apply bg-yellow-500 text-black;
+	}
+
+	.bg-red {
+		@apply bg-destructive text-white;
 	}
 </style>

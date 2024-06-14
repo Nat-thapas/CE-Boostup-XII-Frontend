@@ -162,7 +162,11 @@
 				{#each Array(5) as _, i}
 					<button
 						on:click|stopPropagation={() => {
-							difficulty = i + 1;
+							if (difficulty === i + 1) {
+								difficulty = undefined;
+							} else {
+								difficulty = i + 1;
+							}
 							goto(
 								`${url.pathname}?${setSearchParams(url.search, { difficulties: difficulty, page: undefined })}`
 							);
@@ -293,7 +297,7 @@
 			<p class="hidden w-1/2 overflow-hidden text-ellipsis text-nowrap md:inline">เนื้อหา</p>
 		</div>
 		<div class="flex space-x-4">
-			<p class="hidden w-44 overflow-hidden text-ellipsis text-nowrap xl:inline">ออกโจทย์โดย</p>
+			<p class="hidden w-44 overflow-hidden text-ellipsis text-nowrap xl:inline">ผู้ออกโจทย์</p>
 			<button
 				on:click={() => {
 					if (sort === 'difficulty') {
@@ -395,9 +399,8 @@
 	</Pagination.Root>
 </div>
 {#if isUserStaffOrHigher}
-	<a href={`${base}/problems/create`}>
-		<Button
-			class="fixed bottom-4 right-4 h-16 w-16 rounded-full p-4 transition-transform hover:scale-110">
+	<a href={`${base}/problems/create`} class="fixed bottom-4 right-4">
+		<Button class="h-16 w-16 rounded-full p-4 transition-transform hover:scale-110">
 			<Plus size={32} />
 		</Button>
 	</a>

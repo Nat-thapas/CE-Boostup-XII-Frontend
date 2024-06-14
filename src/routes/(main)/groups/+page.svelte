@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ArrowDown, ArrowUp, Pencil, Plus, PlusCircle, Search, Trash2 } from 'lucide-svelte';
+	import { ArrowDown, ArrowUp, Plus, PlusCircle, Save, Search, Trash2 } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 	import { fileProxy, superForm, type Infer } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
@@ -245,8 +245,8 @@
 						</AlertDialog.Content>
 					</AlertDialog.Root>
 					<Form.Button class="flex w-0 flex-grow items-center space-x-2">
-						<Pencil />
-						<p>แก้ไข</p>
+						<Save />
+						<p>Save</p>
 					</Form.Button>
 				</div>
 			</form>

@@ -41,7 +41,7 @@
 
 	let mounted = false;
 
-	function updatePathname(path: string, token: string) {
+	function updatePathname(path: string, token: string): void {
 		replaceUUIDWithTile(path, token).then((newPathname) => {
 			pathname = newPathname;
 		});
@@ -51,21 +51,7 @@
 		mounted = true;
 	});
 
-	$: mounted && updatePathname($page.url.pathname.slice(baseUrl.length), token);
-
-	$: console.log(
-		'actualpathname:',
-		$page.url.pathname,
-		'actualbaseurl:',
-		base,
-		'pathname:',
-		pathname,
-		'baseurl:',
-		baseUrl,
-		'currentpagename:',
-		currentPageName,
-		items
-	);
+	$: if (mounted) updatePathname($page.url.pathname.slice(baseUrl.length), token);
 </script>
 
 <Breadcrumb.Root class={className}>

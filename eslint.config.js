@@ -29,5 +29,11 @@ export default [
 	},
 	{
 		ignores: ['build/', '.svelte-kit/', 'dist/', 'src/lib/components/ui/']
+	},
+	{
+		rules: {
+			'@typescript-eslint/explicit-function-return-type': 'warn',
+			'@typescript-eslint/no-explicit-any': 'warn'
+		}
 	}
 ];
