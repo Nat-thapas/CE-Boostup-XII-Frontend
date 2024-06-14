@@ -1,0 +1,14 @@
+.DS_Store
+node_modules
+/build
+/.svelte-kit
+*.md
+eslint.*
+.gitignore
+.npmrc
+.prettier*
+.dockerignore
+Dockerfile
+components.json
+docker-compose.yaml
+playwright.config.ts

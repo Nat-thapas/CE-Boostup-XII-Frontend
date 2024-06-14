@@ -3,7 +3,7 @@
 	import { githubLight } from '@uiw/codemirror-theme-github';
 	import { vscodeDark } from '@uiw/codemirror-theme-vscode';
 	import { Mutex } from 'async-mutex';
-	import { CirclePlay, Lightbulb, LoaderCircle, Plus, Upload } from 'lucide-svelte';
+	import { CirclePlay, Lightbulb, LoaderCircle, Pencil, Plus, Upload } from 'lucide-svelte';
 	import { mode } from 'mode-watcher';
 	import { onMount } from 'svelte';
 	import CodeMirror from 'svelte-codemirror-editor';
@@ -11,6 +11,7 @@
 	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
 
+	import { base } from '$app/paths';
 	import { PUBLIC_API_URL } from '$env/static/public';
 
 	import { compareOutput } from '$lib/compare-output';
@@ -23,7 +24,10 @@
 	import { ScrollArea } from '$lib/components/ui/scroll-area';
 	import * as Select from '$lib/components/ui/select';
 	import * as Tabs from '$lib/components/ui/tabs';
+	import { PublicationStatus } from '$lib/enums/publication-status.enum';
+	import { Role } from '$lib/enums/role.enum';
 	import { format } from '$lib/format-number';
+	import { isSomeRolesIn } from '$lib/roles';
 
 	import type { PageData } from './$types';
 
@@ -545,6 +549,14 @@
 		</Tabs.Root>
 	</Resizable.Pane>
 </Resizable.PaneGroup>
+{#if data.user.id === data.problem?.owner?.id || (data.problem?.publicationStatus === PublicationStatus.AwaitingApproval && isSomeRolesIn( data.user.roles ?? [], [Role.Reviewer] )) || isSomeRolesIn( data.user.roles ?? [], [Role.SuperAdmin] )}
+	<a href={`${base}/problems/${data.problem.id}/edit`}>
+		<Button
+			class="fixed bottom-4 right-4 h-16 w-16 rounded-full p-4 transition-transform hover:scale-110">
+			<Pencil size={32} />
+		</Button>
+	</a>
+{/if}
 
 <style lang="postcss">
 	:global(.cm-line) {

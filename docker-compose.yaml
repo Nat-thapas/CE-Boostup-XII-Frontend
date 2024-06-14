@@ -1,0 +1,13 @@
+name: 'ce-boostup-xii-secondary'
+
+services:
+  sveltekit:
+    build: .
+    container_name: ce-boostup-xii-secondary-sveltekit
+    ports:
+      - '5173:5173'
+    healthcheck:
+      test: 'curl -I http://localhost:5173 || exit 1'
+      start_period: 10s
+      start_interval: 1s
+    restart: unless-stopped
