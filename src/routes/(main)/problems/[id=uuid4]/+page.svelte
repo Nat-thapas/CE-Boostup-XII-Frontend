@@ -663,6 +663,12 @@
 								</div>
 							</div>
 						{/if}
+						{#if data.problem.credits}
+							<div class="mb-4 rounded-lg p-2">
+								<p class="font-medium">Credits</p>
+								<p class="ml-2">{data.problem.credits}</p>
+							</div>
+						{/if}
 					</ScrollArea>
 				</div>
 			</Tabs.Content>
