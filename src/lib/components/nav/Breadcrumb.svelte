@@ -23,7 +23,8 @@
 		.slice(-1)[0]
 		.split('-')
 		.map((name) => name.charAt(0).toUpperCase() + name.slice(1))
-		.join(' ');
+		.join(' ')
+		.replaceAll('   ', ' - ');
 
 	$: items = pathname
 		.split('/')
@@ -32,7 +33,8 @@
 			name: name
 				.split('-')
 				.map((n) => n.charAt(0).toUpperCase() + n.slice(1))
-				.join(' '),
+				.join(' ')
+				.replaceAll('   ', ' - '),
 			href: `${base}/${originalPathname
 				.split('/')
 				.slice(1, i + 2)

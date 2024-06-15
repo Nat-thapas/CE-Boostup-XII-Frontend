@@ -40,6 +40,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	const response = await resolve(event);
 
+	response.headers.delete('link');
+
 	if (event.locals.token !== token) {
 		response.headers.append(
 			'set-cookie',

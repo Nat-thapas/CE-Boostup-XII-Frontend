@@ -103,7 +103,8 @@ export const actions: Actions = {
 
 		if (
 			currentPublicationStatus === PublicationStatus.Draft &&
-			problemOwner === event.locals.user.id
+			(problemOwner === event.locals.user.id ||
+				isSomeRolesIn(event.locals.user.roles ?? [], [Role.SuperAdmin]))
 		) {
 			const body: Record<string, any> = {};
 
@@ -401,9 +402,19 @@ export const actions: Actions = {
 			}
 		}
 
-		return message(form, {
-			type: 'success',
-			text: 'Problem updated successfully!'
-		});
+		if (
+			problemOwner === event.locals.user.id ||
+			isSomeRolesIn(event.locals.user.roles ?? [], [Role.SuperAdmin])
+		) {
+			return message(form, {
+				type: 'success',
+				text: 'Problem updated successfully!'
+			});
+		} else {
+			return message(form, {
+				type: 'success',
+				text: 'Problem status updated successfully!'
+			});
+		}
 	}
 };
