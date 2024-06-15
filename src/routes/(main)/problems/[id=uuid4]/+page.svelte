@@ -599,23 +599,23 @@
 						</div>
 						{#if data.problem.description}
 							<div class="mb-4 ml-2">
-								<p>{data.problem.description}</p>
+								<p class="whitespace-pre-wrap break-words">{data.problem.description}</p>
 							</div>
 						{/if}
 						{#if data.problem.input}
-							<div class="mb-4 rounded-lg p-2">
+							<div class="mb-4 p-2">
 								<p class="font-medium">Input</p>
-								<p class="ml-2">{data.problem.input}</p>
+								<p class="ml-2 whitespace-pre-wrap break-words">{data.problem.input}</p>
 							</div>
 						{/if}
 						{#if data.problem.output}
-							<div class="mb-4 rounded-lg p-2">
+							<div class="mb-4 p-2">
 								<p class="font-medium">Output</p>
-								<p class="ml-2">{data.problem.output}</p>
+								<p class="ml-2 whitespace-pre-wrap break-words">{data.problem.output}</p>
 							</div>
 						{/if}
 						{#if data.problem.allowedHeaders && data.problem.allowedHeaders.length > 0}
-							<div class="mb-4 rounded-lg p-2">
+							<div class="mb-4 p-2">
 								<p class="font-medium">Headers ที่ใช้ได้</p>
 								<div class="ml-2 mt-2 flex flex-wrap gap-2">
 									{#each data.problem.allowedHeaders as header}
@@ -627,7 +627,7 @@
 							</div>
 						{/if}
 						{#if data.problem.bannedFunctions && data.problem.bannedFunctions.length > 0}
-							<div class="mb-4 rounded-lg p-2">
+							<div class="mb-4 p-2">
 								<p class="font-medium">Functions ที่ห้ามใช้</p>
 								<div class="ml-2 mt-2 flex flex-wrap gap-2">
 									{#each data.problem.bannedFunctions as f}
@@ -638,7 +638,7 @@
 								</div>
 							</div>
 						{/if}
-						<div class="mb-3 rounded-lg p-2">
+						<div class="mb-3 p-2">
 							<p class="mb-2 font-medium">Limits</p>
 							<p class="mb-1 ml-2 text-sm">Time limit: {format(data.problem.timeLimit ?? 0)}s</p>
 							<p class="mb-1 ml-2 text-sm">
@@ -649,7 +649,7 @@
 							{/if}
 						</div>
 						{#if data.problem.attachments && data.problem.attachments.length > 0}
-							<div class="mb-4 rounded-lg p-2">
+							<div class="mb-4 p-2">
 								<p class="mb-2 font-medium">Attachments</p>
 								<div class="ml-2 mt-2 flex flex-wrap gap-2">
 									{#each data.problem.attachments as attachment}
@@ -664,9 +664,9 @@
 							</div>
 						{/if}
 						{#if data.problem.credits}
-							<div class="mb-4 rounded-lg p-2">
+							<div class="mb-4 p-2">
 								<p class="font-medium">Credits</p>
-								<p class="ml-2">{data.problem.credits}</p>
+								<p class="ml-2 whitespace-pre-wrap break-words">{data.problem.credits}</p>
 							</div>
 						{/if}
 					</ScrollArea>

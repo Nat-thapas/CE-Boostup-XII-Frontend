@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>CE Boostup XII - Result Codes</title>
+</svelte:head>
+
 <div class="mx-2 mt-4 sm:mx-8 md:mx-12 lg:mx-16">
 	<h1>Result Codes</h1>
 
