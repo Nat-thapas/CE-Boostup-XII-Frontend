@@ -497,8 +497,6 @@
 	$formData.reviewComment = data.problem.reviewComment ?? '';
 
 	let shownCodeEditExperimentationOnly = false;
-
-	$: console.log('formdatachange'), $formData;
 </script>
 
 <svelte:head>
