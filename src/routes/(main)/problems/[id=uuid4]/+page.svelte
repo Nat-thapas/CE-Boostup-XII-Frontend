@@ -510,7 +510,7 @@
 						localStorage.setItem('language', language);
 					}
 				}}>
-				<Select.Trigger class="w-0 flex-grow">
+				<Select.Trigger class="w-0 flex-grow" aria-label="language">
 					<Select.Value placeholder="Language" />
 				</Select.Trigger>
 				<Select.Content>

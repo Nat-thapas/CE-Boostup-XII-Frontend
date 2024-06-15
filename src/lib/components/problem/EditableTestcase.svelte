@@ -57,7 +57,8 @@
 			on:click={() => {
 				dispatch('exitButtonClicked');
 			}}
-			disabled={disabled || readonly}>
+			disabled={disabled || readonly}
+			aria-label="Remove this testcase">
 			<X size={16} />
 		</Button>
 	</div>

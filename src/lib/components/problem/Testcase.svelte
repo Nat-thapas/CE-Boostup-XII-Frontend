@@ -44,7 +44,8 @@
 			variant="ghost"
 			on:click={() => {
 				dispatch('exitButtonClicked');
-			}}>
+			}}
+			aria-label="Remove this testcase">
 			<X size={16} />
 		</Button>
 	</div>

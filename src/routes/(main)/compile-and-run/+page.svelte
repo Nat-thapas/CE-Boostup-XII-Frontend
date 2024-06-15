@@ -192,7 +192,7 @@
 						localStorage.setItem('language', language);
 					}
 				}}>
-				<Select.Trigger class="w-32 flex-grow">
+				<Select.Trigger class="w-32 flex-grow" aria-label="Language">
 					<Select.Value placeholder="Language" />
 				</Select.Trigger>
 				<Select.Content>
@@ -210,7 +210,7 @@
 						localStorage.setItem('optimizationLevel', optimizationLevel);
 					}
 				}}>
-				<Select.Trigger class="w-28 flex-grow">
+				<Select.Trigger class="w-28 flex-grow" aria-label="Optimization">
 					<Select.Value placeholder="Optimization" />
 				</Select.Trigger>
 				<Select.Content>
@@ -228,7 +228,7 @@
 						localStorage.setItem('warningLevel', warningLevel);
 					}
 				}}>
-				<Select.Trigger class="w-32 flex-grow">
+				<Select.Trigger class="w-32 flex-grow" aria-label="Warning">
 					<Select.Value placeholder="Warning" />
 				</Select.Trigger>
 				<Select.Content>

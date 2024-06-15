@@ -516,7 +516,7 @@
 				disabled={data.problem.publicationStatus !== PublicationStatus.Draft ||
 					(data.user.id !== data.problem.owner?.id &&
 						!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}>
-				<Select.Trigger class="w-32 flex-grow">
+				<Select.Trigger class="w-32 flex-grow" aria-label="language">
 					<Select.Value placeholder="Language" />
 				</Select.Trigger>
 				<Select.Content>
@@ -536,7 +536,7 @@
 				disabled={data.problem.publicationStatus !== PublicationStatus.Draft ||
 					(data.user.id !== data.problem.owner?.id &&
 						!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}>
-				<Select.Trigger class="w-28 flex-grow">
+				<Select.Trigger class="w-28 flex-grow" aria-label="optimization">
 					<Select.Value placeholder="Optimization" />
 				</Select.Trigger>
 				<Select.Content>
@@ -743,7 +743,6 @@
 											</a>
 										</Form.Description>
 										<div
-											{...attrs}
 											class="flex h-10 w-full items-center justify-start space-x-2 rounded-md border border-border px-2 py-4 hover:bg-muted"
 											class:cursor-no={data.problem.publicationStatus !== PublicationStatus.Draft}>
 											<p class="text-nowrap text-sm font-normal">ความยาก</p>
@@ -758,7 +757,8 @@
 															(data.user.id !== data.problem.owner?.id &&
 																!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}
 														class:cursor-no={data.problem.publicationStatus !==
-															PublicationStatus.Draft}>
+															PublicationStatus.Draft}
+														aria-label={`Difficulty: ${i + 1}`}>
 														<Star
 															color="#E2AD39"
 															size={24}
@@ -818,7 +818,8 @@
 													}}
 													disabled={data.problem.publicationStatus !== PublicationStatus.Draft ||
 														(data.user.id !== data.problem.owner?.id &&
-															!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))} />
+															!isSomeRolesIn(data.user.roles ?? [], [Role.SuperAdmin]))}
+													aria-label={`Tag: ${tag.name}`} />
 												<Form.Label class="font-normal">
 													{tag.name}
 												</Form.Label>
