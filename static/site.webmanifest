@@ -19,7 +19,7 @@
 			"purpose": "maskable"
 		}
 	],
-	"start_url": "https://boostup.cloud.ce.kmitl.ac.th/grader/v2",
+	"start_url": "https://ceboostup.com/grader/v2",
 	"theme_color": "#ffffff",
 	"background_color": "#ffffff",
 	"display": "standalone"
