@@ -778,9 +778,12 @@
 </Resizable.PaneGroup>
 {#if data.user.id === data.problem?.owner?.id || (data.problem?.publicationStatus === PublicationStatus.AwaitingApproval && isSomeRolesIn( data.user.roles ?? [], [Role.Reviewer] )) || isSomeRolesIn( data.user.roles ?? [], [Role.SuperAdmin] )}
 	<a href={`${base}/problems/${data.problem.id}/edit`} class="fixed bottom-4 right-4">
-		<Button class="h-16 w-16 rounded-full p-4 transition-transform hover:scale-110">
+		<Button
+			class="h-16 w-16 rounded-full p-4 transition-transform hover:scale-110"
+			aria-label="Edit">
 			<Pencil size={32} />
 		</Button>
+		<p class="sr-only">Edit</p>
 	</a>
 {/if}
 {#if saving}

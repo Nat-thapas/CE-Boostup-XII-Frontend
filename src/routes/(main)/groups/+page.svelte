@@ -263,7 +263,7 @@
 			}}
 			class="flex w-64 flex-grow-[999] items-center">
 			<Input placeholder="ค้นหาชื่อกลุ่ม" bind:value={search} class="flex-grow rounded-r-none" />
-			<Button type="submit" class="rounded-l-none"><Search /></Button>
+			<Button type="submit" class="rounded-l-none" aria-label="Search"><Search /></Button>
 		</form>
 	</div>
 	<div class="flex w-full flex-nowrap rounded-lg px-4 py-3">
@@ -446,7 +446,8 @@
 		on:click={() => {
 			createGroupDialogOpen = true;
 		}}
-		class="fixed bottom-4 right-4 h-16 w-16 rounded-full p-4 transition-transform hover:scale-110">
+		class="fixed bottom-4 right-4 h-16 w-16 rounded-full p-4 transition-transform hover:scale-110"
+		aria-label="Create">
 		<Plus size={32} />
 	</Button>
 {/if}

@@ -669,7 +669,8 @@
 		on:click={() => {
 			createUserDialogOpen = true;
 		}}
-		class="fixed bottom-4 right-4 h-16 w-16 rounded-full p-4 transition-transform hover:scale-110">
+		class="fixed bottom-4 right-4 h-16 w-16 rounded-full p-4 transition-transform hover:scale-110"
+		aria-label="Create">
 		<Plus size={32} />
 	</Button>
 {/if}

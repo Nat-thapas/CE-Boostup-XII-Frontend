@@ -106,7 +106,7 @@
 				placeholder="ค้นหาด้วยเลขข้อหรือชื่อโจทย์"
 				bind:value={search}
 				class="flex-grow rounded-r-none" />
-			<Button type="submit" class="rounded-l-none"><Search /></Button>
+			<Button type="submit" class="rounded-l-none" aria-label="Search"><Search /></Button>
 		</form>
 		<DropdownMenu.Root
 			onOpenChange={(open) => {
@@ -170,7 +170,8 @@
 							goto(
 								`${url.pathname}?${setSearchParams(url.search, { difficulties: difficulty, page: undefined })}`
 							);
-						}}>
+						}}
+						aria-label={`Difficulty: ${i + 1}`}>
 						<Star
 							color="#E2AD39"
 							size={24}
@@ -197,7 +198,7 @@
 					}
 				}
 			}}>
-			<Select.Trigger class="w-32 flex-grow">
+			<Select.Trigger class="w-32 flex-grow" aria-label="Completion Status">
 				<Select.Value placeholder="สถานะ" />
 			</Select.Trigger>
 			<Select.Content>
@@ -226,7 +227,7 @@
 						}
 					}
 				}}>
-				<Select.Trigger class="w-32 flex-grow">
+				<Select.Trigger class="w-32 flex-grow" aria-label="Publication Status">
 					<Select.Value placeholder="สถานะโจทย์" />
 				</Select.Trigger>
 				<Select.Content>
@@ -253,7 +254,8 @@
 								`${url.pathname}?${setSearchParams(url.search, { owner: undefined, page: undefined })}`
 							);
 						}
-					}} />
+					}}
+					aria-label="My problems only" />
 				<Label for="my-problems-only-checkbox" class="text-sm font-normal">เฉพาะโจทย์ของฉัน</Label>
 			</div>
 		{/if}
@@ -400,9 +402,12 @@
 </div>
 {#if isUserStaffOrHigher}
 	<a href={`${base}/problems/create`} class="fixed bottom-4 right-4">
-		<Button class="h-16 w-16 rounded-full p-4 transition-transform hover:scale-110">
+		<Button
+			class="h-16 w-16 rounded-full p-4 transition-transform hover:scale-110"
+			aria-label="Create">
 			<Plus size={32} />
 		</Button>
+		<p class="sr-only">Create</p>
 	</a>
 {/if}
 
