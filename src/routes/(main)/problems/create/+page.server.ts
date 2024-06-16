@@ -83,6 +83,7 @@ export const actions: Actions = {
 				const response = await fetch(`${PUBLIC_API_URL}/attachments`, {
 					method: 'POST',
 					headers: {
+						'Content-Type': 'multipart/form-data',
 						Authorization: `Bearer ${event.locals.token}`
 					},
 					body: formData
