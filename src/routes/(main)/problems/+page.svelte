@@ -369,36 +369,49 @@
 			<p class="text-center my-4">ไม่พบโจทย์ที่ค้นหา</p>
 		{/each}
 	</div>
-	<Pagination.Root
-		count={data.problems.total || 1}
-		perPage={data.problems.perPage}
-		let:pages
-		onPageChange={(newPage) => {
-			goto(`${url.pathname}?${setSearchParams(url.search, { page: newPage })}`);
-		}}
-		class="mb-2 mt-4">
-		<Pagination.Content>
-			<Pagination.Item>
-				<Pagination.PrevButton />
-			</Pagination.Item>
-			{#each pages as page (page.key)}
-				{#if page.type === 'ellipsis'}
-					<Pagination.Item>
-						<Pagination.Ellipsis />
-					</Pagination.Item>
-				{:else}
-					<Pagination.Item>
-						<Pagination.Link {page} isActive={currentPage == page.value}>
-							{page.value}
-						</Pagination.Link>
-					</Pagination.Item>
-				{/if}
-			{/each}
-			<Pagination.Item>
-				<Pagination.NextButton />
-			</Pagination.Item>
-		</Pagination.Content>
-	</Pagination.Root>
+	<div class="mb-2 mt-4 flex items-center justify-between">
+		<div class="w-64">
+			<p class="!text-sm !font-normal text-muted-foreground">
+				Displaying {Math.min(
+					(data.problems.page - 1) * data.problems.perPage + 1,
+					data.problems.total
+				)} -
+				{Math.min(data.problems.page * data.problems.perPage, data.problems.total)} of {data
+					.problems.total}
+				items
+			</p>
+		</div>
+		<Pagination.Root
+			count={data.problems.total || 1}
+			perPage={data.problems.perPage}
+			let:pages
+			onPageChange={(newPage) => {
+				goto(`${url.pathname}?${setSearchParams(url.search, { page: newPage })}`);
+			}}>
+			<Pagination.Content>
+				<Pagination.Item>
+					<Pagination.PrevButton />
+				</Pagination.Item>
+				{#each pages as page (page.key)}
+					{#if page.type === 'ellipsis'}
+						<Pagination.Item>
+							<Pagination.Ellipsis />
+						</Pagination.Item>
+					{:else}
+						<Pagination.Item>
+							<Pagination.Link {page} isActive={currentPage == page.value}>
+								{page.value}
+							</Pagination.Link>
+						</Pagination.Item>
+					{/if}
+				{/each}
+				<Pagination.Item>
+					<Pagination.NextButton />
+				</Pagination.Item>
+			</Pagination.Content>
+		</Pagination.Root>
+		<div class="w-64"></div>
+	</div>
 </div>
 {#if isUserStaffOrHigher}
 	<a href={`${base}/problems/create`} class="fixed bottom-4 right-4">

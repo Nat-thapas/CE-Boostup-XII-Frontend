@@ -410,36 +410,45 @@
 			<p class="text-center my-4">ไม่พบกลุ่มที่ค้นหา</p>
 		{/each}
 	</div>
-	<Pagination.Root
-		count={data.groups.total || 1}
-		perPage={data.groups.perPage}
-		let:pages
-		onPageChange={(newPage) => {
-			goto(`${url.pathname}?${setSearchParams(url.search, { page: newPage })}`);
-		}}
-		class="mb-2 mt-4">
-		<Pagination.Content>
-			<Pagination.Item>
-				<Pagination.PrevButton />
-			</Pagination.Item>
-			{#each pages as page (page.key)}
-				{#if page.type === 'ellipsis'}
-					<Pagination.Item>
-						<Pagination.Ellipsis />
-					</Pagination.Item>
-				{:else}
-					<Pagination.Item>
-						<Pagination.Link {page} isActive={currentPage == page.value}>
-							{page.value}
-						</Pagination.Link>
-					</Pagination.Item>
-				{/if}
-			{/each}
-			<Pagination.Item>
-				<Pagination.NextButton />
-			</Pagination.Item>
-		</Pagination.Content>
-	</Pagination.Root>
+	<div class="mb-2 mt-4 flex items-center justify-between">
+		<div class="w-64">
+			<p class="!text-sm !font-normal text-muted-foreground">
+				Displaying {Math.min((data.groups.page - 1) * data.groups.perPage + 1, data.groups.total)} -
+				{Math.min(data.groups.page * data.groups.perPage, data.groups.total)} of {data.groups.total}
+				items
+			</p>
+		</div>
+		<Pagination.Root
+			count={data.groups.total || 1}
+			perPage={data.groups.perPage}
+			let:pages
+			onPageChange={(newPage) => {
+				goto(`${url.pathname}?${setSearchParams(url.search, { page: newPage })}`);
+			}}>
+			<Pagination.Content>
+				<Pagination.Item>
+					<Pagination.PrevButton />
+				</Pagination.Item>
+				{#each pages as page (page.key)}
+					{#if page.type === 'ellipsis'}
+						<Pagination.Item>
+							<Pagination.Ellipsis />
+						</Pagination.Item>
+					{:else}
+						<Pagination.Item>
+							<Pagination.Link {page} isActive={currentPage == page.value}>
+								{page.value}
+							</Pagination.Link>
+						</Pagination.Item>
+					{/if}
+				{/each}
+				<Pagination.Item>
+					<Pagination.NextButton />
+				</Pagination.Item>
+			</Pagination.Content>
+		</Pagination.Root>
+		<div class="w-64"></div>
+	</div>
 </div>
 {#if isUserAdminOrHigher}
 	<Button
