@@ -700,7 +700,7 @@
 										{#if !$formData.allowAllHeaders}
 											{#each $formData.allowedHeaders ?? [] as allowedHeader}
 												<div
-													class="dark:hover:bg-700 flex items-center space-x-1 rounded-lg bg-muted hover:bg-neutral-200">
+													class="flex items-center space-x-1 rounded-lg bg-muted hover:bg-neutral-200 dark:hover:bg-neutral-700">
 													<Form.Control let:attrs>
 														<Form.Label class="my-2 ml-2 font-normal">
 															{allowedHeader}
@@ -768,7 +768,7 @@
 									<div class="flex flex-wrap gap-2">
 										{#each $formData.bannedFunctions ?? [] as bannedFunction}
 											<div
-												class="dark:hover:bg-700 flex items-center space-x-1 rounded-lg bg-muted hover:bg-neutral-200">
+												class="flex items-center space-x-1 rounded-lg bg-muted hover:bg-neutral-200 dark:hover:bg-neutral-700">
 												<Form.Control let:attrs>
 													<Form.Label class="my-2 ml-2 font-normal">
 														{bannedFunction}
