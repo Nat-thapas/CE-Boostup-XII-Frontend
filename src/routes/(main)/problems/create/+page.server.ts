@@ -58,7 +58,7 @@ export const actions: Actions = {
 			input: form.data.input || undefined,
 			output: form.data.output || undefined,
 			hint: form.data.hint || undefined,
-			hintCost: form.data.hintCost,
+			hintCost: form.data.hintCost ?? undefined,
 			testcases: form.data.testcases,
 			exampleTestcases: form.data.exampleTestcases,
 			starterCode: form.data.starterCode,

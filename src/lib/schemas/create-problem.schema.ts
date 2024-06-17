@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { OptimizationLevel } from '$lib/enums/optimization-level.enum';
 import { ProgrammingLanguage } from '$lib/enums/programming-language.enum';
+import { parseNumberOptional } from '$lib/parse-number-optional';
 
 export const formSchema = z
 	.object({
@@ -50,17 +51,33 @@ export const formSchema = z
 		allowedHeaders: z.array(z.string()).optional(),
 		allowAllHeaders: z.boolean().optional(),
 		bannedFunctions: z.array(z.string()).optional(),
-		timeLimit: z.coerce
-			.number()
-			.positive('Time limit must be positive')
-			.max(5, 'Time limit must be at most 5 seconds')
-			.optional(),
-		memoryLimit: z.coerce
-			.number()
-			.positive('Memory limit must be positive')
-			.int()
-			.max(134217728, 'Memory limit must be at most 128 MiB')
-			.optional(),
+		timeLimit: z
+			.any()
+			.transform((val) => {
+				if (val === '') return undefined;
+				return parseNumberOptional(val);
+			})
+			.pipe(
+				z
+					.number()
+					.positive('Time limit must be positive')
+					.max(5, 'Time limit must be at most 5 seconds')
+					.optional()
+			),
+		memoryLimit: z
+			.any()
+			.transform((val) => {
+				if (val === '') return undefined;
+				return parseNumberOptional(val);
+			})
+			.pipe(
+				z
+					.number()
+					.positive('Memory limit must be positive')
+					.int()
+					.max(134217728, 'Memory limit must be at most 128 MiB')
+					.optional()
+			),
 		difficulty: z
 			.number()
 			.int()
