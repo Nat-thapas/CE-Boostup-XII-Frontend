@@ -6,6 +6,7 @@
 	import {
 		BookText,
 		Circle,
+		CircleAlert,
 		CircleCheck,
 		CircleCheckBig,
 		CircleDot,
@@ -251,6 +252,8 @@
 		}
 	});
 
+	let saveSuccess = false;
+
 	let saving = false;
 
 	async function saveCode(): Promise<void> {
@@ -275,9 +278,12 @@
 				});
 
 				if (!response.ok) {
+					saveSuccess = false;
 					toast.error('Failed to save the code');
 					return;
 				}
+
+				saveSuccess = true;
 
 				save = await response.json();
 			} else {
@@ -294,9 +300,12 @@
 				});
 
 				if (!response.ok) {
+					saveSuccess = false;
 					toast.error('Failed to save the code');
 					return;
 				}
+
+				saveSuccess = true;
 
 				save = await response.json();
 			}
@@ -776,7 +785,7 @@
 		</Tabs.Root>
 	</Resizable.Pane>
 </Resizable.PaneGroup>
-{#if data.user.id === data.problem?.owner?.id || (data.problem?.publicationStatus === PublicationStatus.AwaitingApproval && isSomeRolesIn( data.user.roles ?? [], [Role.Reviewer] )) || isSomeRolesIn( data.user.roles ?? [], [Role.SuperAdmin] )}
+{#if data.user.id === data.problem?.owner?.id || isSomeRolesIn( data.user.roles ?? [], [Role.Reviewer, Role.Admin, Role.SuperAdmin] )}
 	<a href={`${base}/problems/${data.problem.id}/edit`} class="fixed bottom-4 right-4">
 		<Button
 			class="h-16 w-16 rounded-full p-4 transition-transform hover:scale-110"
@@ -791,10 +800,15 @@
 		<LoaderCircle class="mb-0.5 mr-2 h-4 w-4 animate-spin opacity-50" />
 		<p class="text-sm opacity-50">Saving...</p>
 	</div>
-{:else}
+{:else if saveSuccess}
 	<div class="fixed bottom-1.5 left-2 flex items-center">
 		<CircleCheckBig class="mb-0.5 mr-2 h-4 w-4 opacity-50" />
 		<p class="text-sm opacity-50">Saved</p>
+	</div>
+{:else}
+	<div class="fixed bottom-1.5 left-2 flex items-center">
+		<CircleAlert class="mb-0.5 mr-2 h-4 w-4 opacity-50" />
+		<p class="text-sm opacity-50">Not saved!</p>
 	</div>
 {/if}
 

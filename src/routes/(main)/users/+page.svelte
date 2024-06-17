@@ -630,39 +630,48 @@
 					class="w-full rounded-lg bg-muted px-4 py-3 transition-all hover:scale-105 hover:bg-neutral-200 dark:hover:bg-neutral-700 md:hover:scale-[1.04] lg:hover:scale-[1.03] xl:hover:scale-[1.02] 2xl:hover:scale-[1.01]" />
 			</button>
 		{:else}
-			<p class="text-center my-4">ไม่พบกลุ่มที่ค้นหา</p>
+			<p class="text-center my-4">ไม่พบผู้ใช้ที่ค้นหา</p>
 		{/each}
 	</div>
-	<Pagination.Root
-		count={data.users.total || 1}
-		perPage={data.users.perPage}
-		let:pages
-		onPageChange={(newPage) => {
-			goto(`${url.pathname}?${setSearchParams(url.search, { page: newPage })}`);
-		}}
-		class="mb-2 mt-4">
-		<Pagination.Content>
-			<Pagination.Item>
-				<Pagination.PrevButton />
-			</Pagination.Item>
-			{#each pages as page (page.key)}
-				{#if page.type === 'ellipsis'}
-					<Pagination.Item>
-						<Pagination.Ellipsis />
-					</Pagination.Item>
-				{:else}
-					<Pagination.Item>
-						<Pagination.Link {page} isActive={currentPage == page.value}>
-							{page.value}
-						</Pagination.Link>
-					</Pagination.Item>
-				{/if}
-			{/each}
-			<Pagination.Item>
-				<Pagination.NextButton />
-			</Pagination.Item>
-		</Pagination.Content>
-	</Pagination.Root>
+	<div class="mb-2 mt-4 flex items-center justify-between">
+		<div class="w-64">
+			<p class="!text-sm !font-normal text-muted-foreground">
+				Displaying {Math.min((data.users.page - 1) * data.users.perPage + 1, data.users.total)} -
+				{Math.min(data.users.page * data.users.perPage, data.users.total)} of {data.users.total}
+				items
+			</p>
+		</div>
+		<Pagination.Root
+			count={data.users.total || 1}
+			perPage={data.users.perPage}
+			let:pages
+			onPageChange={(newPage) => {
+				goto(`${url.pathname}?${setSearchParams(url.search, { page: newPage })}`);
+			}}>
+			<Pagination.Content>
+				<Pagination.Item>
+					<Pagination.PrevButton />
+				</Pagination.Item>
+				{#each pages as page (page.key)}
+					{#if page.type === 'ellipsis'}
+						<Pagination.Item>
+							<Pagination.Ellipsis />
+						</Pagination.Item>
+					{:else}
+						<Pagination.Item>
+							<Pagination.Link {page} isActive={currentPage == page.value}>
+								{page.value}
+							</Pagination.Link>
+						</Pagination.Item>
+					{/if}
+				{/each}
+				<Pagination.Item>
+					<Pagination.NextButton />
+				</Pagination.Item>
+			</Pagination.Content>
+		</Pagination.Root>
+		<div class="w-64"></div>
+	</div>
 </div>
 {#if isUserAdminOrHigher}
 	<Button

@@ -606,7 +606,15 @@
 												{#each Array(5) as _, i}
 													<button
 														on:click|preventDefault|stopPropagation={() => {
+															const oldDifficulty = $formData.difficulty ?? 0;
 															$formData.difficulty = i + 1;
+															if (
+																!$formData.score ||
+																$formData.score === 0 ||
+																$formData.score === oldDifficulty * 100
+															) {
+																$formData.score = (i + 1) * 100;
+															}
 														}}>
 														<Star
 															color="#E2AD39"

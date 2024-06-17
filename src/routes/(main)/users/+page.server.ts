@@ -177,6 +177,7 @@ export const actions: Actions = {
 			bio?: string;
 			group?: string | null;
 			avatar?: string;
+			oldPassword?: string;
 			password?: string;
 		} = {
 			displayName: form.data.displayName,
@@ -190,6 +191,7 @@ export const actions: Actions = {
 		}
 
 		if (form.data.password) {
+			body.oldPassword = '';
 			body.password = form.data.password;
 		}
 
