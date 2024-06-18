@@ -2,7 +2,7 @@ import { error, type Actions } from '@sveltejs/kit';
 import { fail, message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
-import { PUBLIC_API_URL } from '$env/static/public';
+import { PRIVATE_API_URL } from '$env/static/private';
 
 import type { Group } from '$lib/intefaces/group.interface';
 import type { PaginatedResponse } from '$lib/intefaces/pagination.interface';
@@ -15,7 +15,7 @@ import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const groupsResponsePromise = fetch(
-		`${PUBLIC_API_URL}/groups?` +
+		`${PRIVATE_API_URL}/groups?` +
 			new URLSearchParams({
 				sort: 'name',
 				perPage: '1000'
@@ -44,7 +44,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	}
 
 	const usersResponsePromise = fetch(
-		`${PUBLIC_API_URL}/users?` + new URLSearchParams(searchParams as Record<string, string>),
+		`${PRIVATE_API_URL}/users?` + new URLSearchParams(searchParams as Record<string, string>),
 		{
 			headers: {
 				'Content-Type': 'application/json',
@@ -104,7 +104,7 @@ export const actions: Actions = {
 			body.password = form.data.password;
 		}
 
-		const response = await fetch(`${PUBLIC_API_URL}/users`, {
+		const response = await fetch(`${PRIVATE_API_URL}/users`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -199,7 +199,7 @@ export const actions: Actions = {
 			body.avatar = `data:${form.data.avatar.type};base64,` + (await toBase64(form.data.avatar));
 		}
 
-		const response = await fetch(`${PUBLIC_API_URL}/users/${form.data.id}`, {
+		const response = await fetch(`${PRIVATE_API_URL}/users/${form.data.id}`, {
 			method: 'PATCH',
 			headers: {
 				'Content-Type': 'application/json',
