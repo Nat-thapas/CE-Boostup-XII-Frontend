@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 
-import { PUBLIC_API_URL } from '$env/static/public';
+import { PRIVATE_API_URL } from '$env/static/private';
 
 import type { Problem } from '$lib/intefaces/problem.interface';
 import type { Save } from '$lib/intefaces/save.interface';
@@ -8,14 +8,14 @@ import type { Save } from '$lib/intefaces/save.interface';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
-	const problemResponsePromise = fetch(`${PUBLIC_API_URL}/problems/${params.id}`, {
+	const problemResponsePromise = fetch(`${PRIVATE_API_URL}/problems/${params.id}`, {
 		headers: {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${locals.token}`
 		}
 	});
 
-	const saveResponsePromise = fetch(`${PUBLIC_API_URL}/saves/for-problem/${params.id}`, {
+	const saveResponsePromise = fetch(`${PRIVATE_API_URL}/saves/for-problem/${params.id}`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',

@@ -2,7 +2,7 @@ import type { Actions } from '@sveltejs/kit';
 import { fail, message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
-import { PUBLIC_API_URL } from '$env/static/public';
+import { PRIVATE_API_URL } from '$env/static/private';
 
 import { formSchema } from '$lib/schemas/edit-profile.schema';
 import { toBase64 } from '$lib/server/file-to-base64';
@@ -39,7 +39,7 @@ export const actions: Actions = {
 			body.avatar = `data:${form.data.avatar.type};base64,` + (await toBase64(form.data.avatar));
 		}
 
-		const response = await fetch(`${PUBLIC_API_URL}/users/${event.url.searchParams.get('id')}`, {
+		const response = await fetch(`${PRIVATE_API_URL}/users/${event.url.searchParams.get('id')}`, {
 			method: 'PATCH',
 			headers: {
 				'Content-Type': 'application/json',

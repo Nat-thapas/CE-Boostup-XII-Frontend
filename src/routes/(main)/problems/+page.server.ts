@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 
-import { PUBLIC_API_URL } from '$env/static/public';
+import { PRIVATE_API_URL } from '$env/static/private';
 
 import type { PaginatedResponse } from '$lib/intefaces/pagination.interface';
 import type { ProblemTag } from '$lib/intefaces/problem-tag.interface';
@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	}
 
 	const problemsResponsePromise = fetch(
-		`${PUBLIC_API_URL}/problems?` + new URLSearchParams(searchParams as Record<string, string>),
+		`${PRIVATE_API_URL}/problems?` + new URLSearchParams(searchParams as Record<string, string>),
 		{
 			headers: {
 				'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	);
 
 	const problemTagsResponsePromise = fetch(
-		`${PUBLIC_API_URL}/problem-tags?` +
+		`${PRIVATE_API_URL}/problem-tags?` +
 			new URLSearchParams({
 				sort: 'name',
 				perPage: '1000'

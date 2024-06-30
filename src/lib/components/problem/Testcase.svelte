@@ -70,7 +70,11 @@
 				{:else}
 					{#each outputLines as line}
 						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-						<code class="block whitespace-pre-wrap text-nowrap text-sm">{@html line}</code>
+						{#if line}
+							<code class="block whitespace-pre-wrap text-nowrap text-sm">{@html line}</code>
+						{:else}
+							<code class="block whitespace-pre-wrap text-nowrap text-sm">{'\n'}</code>
+						{/if}
 					{/each}
 				{/if}
 			</ScrollArea>

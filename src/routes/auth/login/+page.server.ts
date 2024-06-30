@@ -3,7 +3,7 @@ import { message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
 import { base } from '$app/paths';
-import { PUBLIC_API_URL } from '$env/static/public';
+import { PRIVATE_API_URL } from '$env/static/private';
 
 import { formSchema } from '$lib/schemas/login.schema';
 
@@ -27,7 +27,7 @@ export const actions: Actions = {
 			});
 		}
 
-		const response = await fetch(`${PUBLIC_API_URL}/auth/login`, {
+		const response = await fetch(`${PRIVATE_API_URL}/auth/login`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'

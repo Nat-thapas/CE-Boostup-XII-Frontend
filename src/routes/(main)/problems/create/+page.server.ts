@@ -3,7 +3,7 @@ import { fail, message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
 import { base } from '$app/paths';
-import { PUBLIC_API_URL } from '$env/static/public';
+import { PRIVATE_API_URL } from '$env/static/private';
 
 import { assignDefined } from '$lib/assign-defined';
 import type { PaginatedResponse } from '$lib/intefaces/pagination.interface';
@@ -14,7 +14,7 @@ import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const problemTagsResponsePromise = fetch(
-		`${PUBLIC_API_URL}/problem-tags?` +
+		`${PRIVATE_API_URL}/problem-tags?` +
 			new URLSearchParams({
 				sort: 'name',
 				perPage: '1000'
@@ -54,11 +54,11 @@ export const actions: Actions = {
 
 		assignDefined(body, {
 			title: form.data.title,
-			description: form.data.description,
-			input: form.data.input,
-			output: form.data.output,
-			hint: form.data.hint,
-			hintCost: form.data.hintCost,
+			description: form.data.description || undefined,
+			input: form.data.input || undefined,
+			output: form.data.output || undefined,
+			hint: form.data.hint || undefined,
+			hintCost: form.data.hintCost ?? undefined,
 			testcases: form.data.testcases,
 			exampleTestcases: form.data.exampleTestcases,
 			starterCode: form.data.starterCode,
@@ -66,8 +66,8 @@ export const actions: Actions = {
 			solutionLanguage: form.data.solutionLanguage,
 			allowedHeaders: form.data.allowAllHeaders ? null : form.data.allowedHeaders,
 			bannedFunctions: form.data.bannedFunctions,
-			timeLimit: form.data.timeLimit,
-			memoryLimit: form.data.memoryLimit,
+			timeLimit: form.data.timeLimit || undefined,
+			memoryLimit: form.data.memoryLimit || undefined,
 			difficulty: form.data.difficulty,
 			score: form.data.score,
 			optimizationLevel: form.data.optimizationLevel,
@@ -80,7 +80,7 @@ export const actions: Actions = {
 			for (const [i, attachment] of Object.entries(form.data.attachments)) {
 				const formData = new FormData();
 				formData.append('file', attachment);
-				const response = await fetch(`${PUBLIC_API_URL}/attachments`, {
+				const response = await fetch(`${PRIVATE_API_URL}/attachments`, {
 					method: 'POST',
 					headers: {
 						Authorization: `Bearer ${event.locals.token}`
@@ -103,7 +103,7 @@ export const actions: Actions = {
 			}
 		}
 
-		const response = await fetch(`${PUBLIC_API_URL}/problems`, {
+		const response = await fetch(`${PRIVATE_API_URL}/problems`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

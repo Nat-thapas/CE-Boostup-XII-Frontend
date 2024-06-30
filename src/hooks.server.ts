@@ -1,7 +1,7 @@
 import { redirect, type Handle } from '@sveltejs/kit';
 
 import { base } from '$app/paths';
-import { PUBLIC_API_URL } from '$env/static/public';
+import { PRIVATE_API_URL } from '$env/static/private';
 
 import type { User } from '$lib/intefaces/user.interface';
 import { parseCookies } from '$lib/parse-cookies';
@@ -18,7 +18,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	if (token) {
 		reason = 'Your session has expired. Please login again.';
 
-		const response = await fetch(`${PUBLIC_API_URL}/users/me`, {
+		const response = await fetch(`${PRIVATE_API_URL}/users/me`, {
 			headers: {
 				Authorization: `Bearer ${token}`
 			}

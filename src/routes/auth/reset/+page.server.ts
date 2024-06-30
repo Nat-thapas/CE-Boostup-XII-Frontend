@@ -3,7 +3,8 @@ import { message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
 import { base } from '$app/paths';
-import { PUBLIC_API_URL, PUBLIC_ORIGIN } from '$env/static/public';
+import { PRIVATE_API_URL } from '$env/static/private';
+import { PUBLIC_ORIGIN } from '$env/static/public';
 
 import { parseBaseUrl } from '$lib/parse-base-url';
 import { formSchema } from '$lib/schemas/reset.schema';
@@ -26,7 +27,7 @@ export const actions: Actions = {
 			});
 		}
 
-		const response = await fetch(`${PUBLIC_API_URL}/auth/request-password-reset`, {
+		const response = await fetch(`${PRIVATE_API_URL}/auth/request-password-reset`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'

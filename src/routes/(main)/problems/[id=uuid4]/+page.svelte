@@ -39,7 +39,6 @@
 	import * as Select from '$lib/components/ui/select';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { CompletionStatus } from '$lib/enums/completion-status.enum';
-	import { PublicationStatus } from '$lib/enums/publication-status.enum';
 	import { ResultCode } from '$lib/enums/result-code.enum';
 	import { Role } from '$lib/enums/role.enum';
 	import { format } from '$lib/format-number';
