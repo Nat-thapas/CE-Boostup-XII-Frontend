@@ -24,7 +24,7 @@
 	export let memory: number | undefined = undefined;
 
 	$: outputLines = convert
-		.toHtml(escape(output.length > 16384 ? output.slice(0, 16384) + '...' : output))
+		.toHtml(escape(output.length > 1048576 ? output.slice(0, 1048576) + '...' : output))
 		.split('\n');
 </script>
 
