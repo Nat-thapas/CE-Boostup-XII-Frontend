@@ -1,38 +1,33 @@
-# create-svelte
+# CE Boostup XII Secondary Frontend
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
 
-## Creating a project
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Running a Development Server
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+### Intalling Dependencies
+If this is the first time you're running the server, first install the dependencies using the command `pnpm install`
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+### Starting the Server
+Use the command `pnpm run dev` to start a development server, the server will automatically reload when it detects a file change
 
-## Developing
+You can also use the command `pnpm run preview` to start a development server in production mode, this allow to test code that may behave differently in development and production mode, so far this code base does not contains code with such behavior
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
-```bash
-npm run dev
+## Deployment
+After configuring the application, simply run `docker compose up -d --build` to start the application. Docker compose may raise an error about orphan containers, this is due to this and the backend compose having the same name, this is intentional, as the 2 are intended to be run together.
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
 
-## Building
+## Configurations
 
-To create a production version of your app:
+### .env
+The .env file for development is loaded by vite, refer to vite's documentation on how they're loaded. The .env file for deployment must be named `.env.production` to be loaded correctly.
 
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+key : description (type)
+  - ORIGIN : The origin URL for the application, this is used by SvelteKit for CSRF prevention (string)
+  - HOST : The host/address the server will listen on, set to `0.0.0.0` to listen on all available addresses (string)
+  - PORT : The port the server will listen on (number)
+  - BODY_SIZE_LIMIT : The maximum body size that NodeJS will accept and process in bytes (number)
+  - PUBLIC_ORIGIN : The origin URL for the application, this is used for sending links to user via emails and parsing URL on the clinet side (string)
+  - PRIVATE_API_URL : The URL of the API server for the server to connect to, this can be a private IP address if the server is on the same network (string)
+  - PUBLIC_API_URL : The URL of the API server for the client to connect to (string)
+  - PUBLIC_ACCEPTED_IMAGE_TYPES : The MIME types that can be used as images, comma separated (string)

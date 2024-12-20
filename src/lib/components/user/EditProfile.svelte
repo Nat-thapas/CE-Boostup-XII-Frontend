@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 
+	import { ScrollArea } from '$lib/components/ui/scroll-area';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import type { User } from '$lib/intefaces/user.interface';
 	import type { FormSchema } from '$lib/schemas/edit-profile.schema';
@@ -27,6 +28,8 @@
 				Make changes to your profile here. Click save when you're done.
 			</Sheet.Description>
 		</Sheet.Header>
-		<EditProfileForm data={{ form, user }} on:message={handleMessage} />
+		<ScrollArea class="max-h-[75vh]">
+			<EditProfileForm data={{ form, user }} on:message={handleMessage} />
+		</ScrollArea>
 	</Sheet.Content>
 </Sheet.Root>

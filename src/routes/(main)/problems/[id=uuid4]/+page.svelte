@@ -32,7 +32,7 @@
 	import EditableTestcase from '$lib/components/problem/EditableTestcase.svelte';
 	import Testcase from '$lib/components/problem/Testcase.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog/index.js';
+	import * as Dialog from '$lib/components/ui/dialog';
 	import Rating from '$lib/components/ui/Rating.svelte';
 	import * as Resizable from '$lib/components/ui/resizable';
 	import { ScrollArea } from '$lib/components/ui/scroll-area';
@@ -81,7 +81,7 @@
 
 	let save = data.save;
 
-	let code = save && save.code ? save.code : data.problem.starterCode ?? '';
+	let code = save && save.code ? save.code : (data.problem.starterCode ?? '');
 
 	let examples: {
 		id: string;

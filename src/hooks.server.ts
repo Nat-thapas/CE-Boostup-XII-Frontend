@@ -40,7 +40,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	const response = await resolve(event);
 
-	// Temporary fix for header to big error
+	// Temporary fix for header too big error
+	// Uncomment next line to enable
 	// response.headers.delete('link');
 
 	if (event.locals.token !== token) {
