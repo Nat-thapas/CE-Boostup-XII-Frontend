@@ -1,5 +1,5 @@
 # CE Boostup XII Secondary Frontend
-
+This frontend server is built with SvelteKit with a focus on speed and responsive design on laptop and tablets. The source code is in the `src` folder with the `src/routes` folder containing most of the pages and the `src/lib` folder containing most of the shared codes and components.
 
 
 ## Running a Development Server
