@@ -197,9 +197,11 @@
 				</Select.Trigger>
 				<Select.Content>
 					<Select.SelectLabel>Language</Select.SelectLabel>
-					{#each languages as language}
-						<Select.Item value={language}>{language.toUpperCase()}</Select.Item>
-					{/each}
+					<div style="max-height: calc(100vh - 176px);" class="overflow-y-auto">
+						{#each languages as language}
+							<Select.Item value={language}>{language.toUpperCase()}</Select.Item>
+						{/each}
+					</div>
 				</Select.Content>
 			</Select.Root>
 			<Select.Root

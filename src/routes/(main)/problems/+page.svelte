@@ -129,13 +129,15 @@
 			<DropdownMenu.Content class="w-48">
 				<DropdownMenu.Label>เลือกเนื้อหา</DropdownMenu.Label>
 				<DropdownMenu.Separator />
-				{#each data.problemTags.data as tag (tag.id)}
-					<DropdownMenu.CheckboxItem bind:checked={tagsStatus[tag.id]}>
-						{tag.name}
-					</DropdownMenu.CheckboxItem>
-				{:else}
-					<DropdownMenu.Item disabled>ไม่มีเนื้อหา</DropdownMenu.Item>
-				{/each}
+				<div style="max-height: calc(100vh - 176px);" class="overflow-y-auto">
+					{#each data.problemTags.data as tag (tag.id)}
+						<DropdownMenu.CheckboxItem bind:checked={tagsStatus[tag.id]}>
+							{tag.name}
+						</DropdownMenu.CheckboxItem>
+					{:else}
+						<DropdownMenu.Item disabled>ไม่มีเนื้อหา</DropdownMenu.Item>
+					{/each}
+				</div>
 			</DropdownMenu.Content>
 		</DropdownMenu.Root>
 		<div
