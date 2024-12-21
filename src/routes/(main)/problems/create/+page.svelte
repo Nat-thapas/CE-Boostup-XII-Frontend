@@ -1045,6 +1045,6 @@
 <style lang="postcss">
 	:global(.cm-line) {
 		font-family: 'Fira Code', monospace;
-		@apply text-sm xl:text-base;
+		@apply text-sm;
 	}
 </style>
