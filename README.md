@@ -20,7 +20,7 @@ After configuring the application, simply run `docker compose up -d --build` to 
 ## Configurations
 
 ### .env
-The .env file for development is loaded by vite, refer to vite's documentation on how they're loaded. The .env file for deployment must be named `.env.production` to be loaded correctly.
+The .env file for development is loaded by Vite, refer to [Vite's documentation](https://vite.dev/guide/env-and-mode) on how they're loaded. The .env file for deployment must be named `.env.production` to be loaded correctly.
 
 key : description (type)
   - ORIGIN : The origin URL for the application, this is used by SvelteKit for CSRF prevention (string)
