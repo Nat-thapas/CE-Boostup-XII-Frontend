@@ -411,7 +411,7 @@
 		{/each}
 	</div>
 	<div class="mb-2 mt-4 flex items-center justify-between">
-		<div class="w-64">
+		<div class="w-64 flex-shrink-0">
 			<p class="!text-sm !font-normal text-muted-foreground">
 				Displaying {Math.min((data.groups.page - 1) * data.groups.perPage + 1, data.groups.total)} -
 				{Math.min(data.groups.page * data.groups.perPage, data.groups.total)} of {data.groups.total}
@@ -447,7 +447,6 @@
 				</Pagination.Item>
 			</Pagination.Content>
 		</Pagination.Root>
-		<div class="w-64"></div>
 	</div>
 </div>
 {#if isUserAdminOrHigher}

@@ -372,7 +372,7 @@
 		{/each}
 	</div>
 	<div class="mb-2 mt-4 flex items-center justify-between">
-		<div class="w-64">
+		<div class="w-64 flex-shrink-0">
 			<p class="!text-sm !font-normal text-muted-foreground">
 				Displaying {Math.min(
 					(data.problems.page - 1) * data.problems.perPage + 1,
@@ -412,7 +412,6 @@
 				</Pagination.Item>
 			</Pagination.Content>
 		</Pagination.Root>
-		<div class="w-64"></div>
 	</div>
 </div>
 {#if isUserStaffOrHigher}
