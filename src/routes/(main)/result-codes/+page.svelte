@@ -11,13 +11,10 @@
 	<h2>WA - Wrong Answer</h2>
 	<p>โค้ดที่ส่งสามารถทำงานได้ในข้อจำกัดทั้งหมด แต่ไม่สามารถให้คำตอบที่ถูกต้องใน Testcase นี้ได้</p>
 
-	<h2>IR - Invalid Return</h2>
-	<p>โค้ดที่ส่งเมื่อนำมา Run แล้วให้ค่า Return ที่ไม่ใช่ 0</p>
-
 	<h2>RE - Runtime Error</h2>
 	<p>
-		โค้ดที่ส่งเมื่อนำมา Run แล้วเกิดข้อผิดพลาดในระหว่างการทำงาน เช่นเกิด Segmentation Fault หรือ
-		Floating Point Arithmatic Exception
+		โค้ดที่ส่งเมื่อนำมา Run แล้วเกิดข้อผิดพลาดในระหว่างการทำงาน เช่นค่า Return ≠ 0, เกิด
+		Segmentation Fault หรือเกิด Floating Point Arithmatic Exception
 	</p>
 
 	<h2>HNA - Header Not Allowed</h2>
