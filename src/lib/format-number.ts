@@ -9,9 +9,6 @@ export function format(
 		return '0';
 	}
 	if (num > below && num < above) {
-		while (num < Math.pow(0.1, digits)) {
-			digits++;
-		}
 		return num.toLocaleString('en-US', { maximumFractionDigits: digits });
 	}
 	const lookup = [
@@ -37,13 +34,60 @@ export function format(
 		{ value: 1e27, symbol: 'R' },
 		{ value: 1e30, symbol: 'Q' }
 	];
-	const regexp = /\.0+$|(?<=\.[0-9]*[1-9])0+$/;
-	const exponentialRegexp = /\.0+(?=e)|(?<=\.[0-9]*[1-9])0+(?=e)/;
+	const trailingZerosRegexp = /\.0+$|(?<=\.[0-9]*[1-9])0+$/;
+	const exponentialTrailingZerosRegexp = /\.0+(?=e)|(?<=\.[0-9]*[1-9])0+(?=e)/;
 	const item = lookup.findLast((item) => num >= item.value && num < item.value * 1e3);
 	return item
 		? (num / item.value)
 				.toFixed(digits)
-				.replace(regexp, '')
+				.replace(trailingZerosRegexp, '')
 				.concat((space ? ' ' : '') + item.symbol)
-		: num.toExponential(digits).replace(exponentialRegexp, '');
+		: num.toExponential(digits).replace(exponentialTrailingZerosRegexp, '');
+}
+
+export function formatBinary(
+	num: number,
+	space: boolean = true,
+	above: number = 0,
+	below: number = 0,
+	digits: number = 3
+): string {
+	if (num === 0) {
+		return '0';
+	}
+	if (num > below && num < above) {
+		return num.toLocaleString('en-US', { maximumFractionDigits: digits });
+	}
+	const lookup = [
+		{ value: 1024 ** -10, symbol: 'qi' },
+		{ value: 1024 ** -9, symbol: 'ri' },
+		{ value: 1024 ** -8, symbol: 'yi' },
+		{ value: 1024 ** -7, symbol: 'zi' },
+		{ value: 1024 ** -6, symbol: 'ai' },
+		{ value: 1024 ** -5, symbol: 'fi' },
+		{ value: 1024 ** -4, symbol: 'pi' },
+		{ value: 1024 ** -3, symbol: 'ni' },
+		{ value: 1024 ** -2, symbol: 'µi' },
+		{ value: 1024 ** -1, symbol: 'mi' },
+		{ value: 1024 ** 0, symbol: '' },
+		{ value: 1024 ** 1, symbol: 'ki' },
+		{ value: 1024 ** 2, symbol: 'Mi' },
+		{ value: 1024 ** 3, symbol: 'Gi' },
+		{ value: 1024 ** 4, symbol: 'Ti' },
+		{ value: 1024 ** 5, symbol: 'Pi' },
+		{ value: 1024 ** 6, symbol: 'Ei' },
+		{ value: 1024 ** 7, symbol: 'Zi' },
+		{ value: 1024 ** 8, symbol: 'Yi' },
+		{ value: 1024 ** 9, symbol: 'Ri' },
+		{ value: 1024 ** 10, symbol: 'Qi' }
+	];
+	const trailingZerosRegexp = /\.0+$|(?<=\.[0-9]*[1-9])0+$/;
+	const exponentialTrailingZerosRegexp = /\.0+(?=e)|(?<=\.[0-9]*[1-9])0+(?=e)/;
+	const item = lookup.findLast((item) => num >= item.value && num < item.value * 1024);
+	return item
+		? (num / item.value)
+				.toFixed(digits)
+				.replace(trailingZerosRegexp, '')
+				.concat((space ? ' ' : '') + item.symbol)
+		: num.toExponential(digits).replace(exponentialTrailingZerosRegexp, '');
 }

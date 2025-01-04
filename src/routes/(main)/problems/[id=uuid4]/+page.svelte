@@ -41,7 +41,7 @@
 	import { CompletionStatus } from '$lib/enums/completion-status.enum';
 	import { ResultCode } from '$lib/enums/result-code.enum';
 	import { Role } from '$lib/enums/role.enum';
-	import { format } from '$lib/format-number';
+	import { format, formatBinary } from '$lib/format-number';
 	import { isSomeRolesIn } from '$lib/roles';
 
 	import Error from '../../../+error.svelte';
@@ -650,7 +650,7 @@
 							<p class="mb-2 font-medium">Limits</p>
 							<p class="mb-1 ml-2 text-sm">Time limit: {format(data.problem.timeLimit ?? 0)}s</p>
 							<p class="mb-1 ml-2 text-sm">
-								Memory limit: {format(data.problem.memoryLimit ?? 0)}B
+								Memory limit: {formatBinary(data.problem.memoryLimit ?? 0)}B
 							</p>
 							{#if data.problem.allowedHeaders && data.problem.allowedHeaders.length === 0}
 								<p class="mb-1 ml-2 text-sm">No headers allowed</p>

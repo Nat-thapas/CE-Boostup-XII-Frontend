@@ -5,7 +5,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import { format } from '$lib/format-number';
+	import { format, formatBinary } from '$lib/format-number';
 	import { cn } from '$lib/utils';
 
 	const dispatch = createEventDispatcher();
@@ -47,7 +47,7 @@
 			<div class="ml-2 flex flex-col @xs:ml-4 @sm:ml-5 @md:flex-row @md:space-x-4">
 				{#if time !== undefined && memory !== undefined}
 					<p class="text-sm">Time: {format(time)}s</p>
-					<p class="text-sm">Memory: {format(memory)}B</p>
+					<p class="text-sm">Memory: {formatBinary(memory)}B</p>
 				{/if}
 			</div>
 		</div>

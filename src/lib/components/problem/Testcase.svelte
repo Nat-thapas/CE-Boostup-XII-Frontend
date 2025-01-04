@@ -8,7 +8,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { ScrollArea } from '$lib/components/ui/scroll-area';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import { format } from '$lib/format-number';
+	import { format, formatBinary } from '$lib/format-number';
 	import { cn } from '$lib/utils';
 
 	const dispatch = createEventDispatcher();
@@ -23,9 +23,17 @@
 	export let time: number | undefined = undefined;
 	export let memory: number | undefined = undefined;
 
-	$: outputLines = convert
-		.toHtml(escape(output.length > 1048576 ? output.slice(0, 1048576) + '...' : output))
-		.split('\n');
+	function processOutput(output: string): string[] {
+		const osc8Regex = /]8;;(.*?)\x07(.*?)]8;;\x07/g;
+		return convert
+			.toHtml(escape(output.length > 1048576 ? output.slice(0, 1048576) + '...' : output))
+			.replace(osc8Regex, (_: string, url: string, text: string) => {
+				return `<a href="${url}" target="_blank" style="text-decoration: underline; color: inherit;">${text}</a>`;
+			})
+			.split('\n');
+	}
+
+	$: outputLines = processOutput(output);
 </script>
 
 <div class={cn('@container', className)}>
@@ -35,7 +43,7 @@
 			<div class="flex flex-col @sm:flex-row @sm:space-x-4">
 				{#if time !== undefined && memory !== undefined}
 					<p class="text-sm">Time: {format(time)}s</p>
-					<p class="text-sm">Memory: {format(memory)}B</p>
+					<p class="text-sm">Memory: {formatBinary(memory)}B</p>
 				{/if}
 			</div>
 		</div>

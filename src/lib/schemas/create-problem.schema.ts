@@ -21,7 +21,9 @@ export const formSchema = z
 		testcases: z
 			.array(
 				z.object({
-					input: z.string().max(262144, 'Testcase input must be at most 262,144 characters long'),
+					input: z
+						.string()
+						.max(16777216, 'Testcase input must be at most 16,777,216 characters long'),
 					output: z
 						.string()
 						.max(16777216, 'Testcase output must be at most 16,777,216 characters long')
@@ -34,7 +36,7 @@ export const formSchema = z
 				z.object({
 					input: z
 						.string()
-						.max(262144, 'Example testcase input must be at most 262,144 characters long'),
+						.max(16777216, 'Example testcase input must be at most 16,777,216 characters long'),
 					output: z
 						.string()
 						.max(16777216, 'Example testcase output must be at most 16,777,216 characters long')
