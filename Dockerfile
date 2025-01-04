@@ -24,8 +24,8 @@ FROM base AS deploy
 RUN apk add --update curl && rm -rf /var/cache/apk/*
 
 WORKDIR /app
-COPY --from=build --chown=node:node /app/build ./build
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
+COPY --from=build --chown=node:node /app/build ./build
 COPY --chown=node:node package.json package.json
 COPY --chown=node:node .env.production .env
 

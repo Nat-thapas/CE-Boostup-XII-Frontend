@@ -442,7 +442,6 @@
 					class:bg-yellow={[ResultCode.HNA, ResultCode.FNA].includes(c)}
 					class:bg-red={[
 						ResultCode.WA,
-						ResultCode.IR,
 						ResultCode.RE,
 						ResultCode.COLE,
 						ResultCode.CTLE,

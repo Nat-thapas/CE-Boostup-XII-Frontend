@@ -647,7 +647,8 @@
 			let:pages
 			onPageChange={(newPage) => {
 				goto(`${url.pathname}?${setSearchParams(url.search, { page: newPage })}`);
-			}}>
+			}}
+			class="mx-2 w-fit">
 			<Pagination.Content>
 				<Pagination.Item>
 					<Pagination.PrevButton />
@@ -670,7 +671,7 @@
 				</Pagination.Item>
 			</Pagination.Content>
 		</Pagination.Root>
-		<div class="w-64"></div>
+		<div class="w-64 flex-shrink-[999]"></div>
 	</div>
 </div>
 {#if isUserAdminOrHigher}
