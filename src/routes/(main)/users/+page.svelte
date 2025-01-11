@@ -321,14 +321,14 @@
 						<Input
 							{...attrs}
 							bind:value={$editUserFormData.displayName}
-							readonly={!isUserSuperAdmin} />
+							disabled={!isUserSuperAdmin} />
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
 				<Form.Field form={editUserForm} name="email">
 					<Form.Control let:attrs>
 						<Form.Label>Email</Form.Label>
-						<Input {...attrs} bind:value={$editUserFormData.email} readonly={!isUserSuperAdmin} />
+						<Input {...attrs} bind:value={$editUserFormData.email} disabled={!isUserSuperAdmin} />
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
@@ -396,7 +396,7 @@
 				<Form.Field form={editUserForm} name="bio">
 					<Form.Control let:attrs>
 						<Form.Label>Bio / status</Form.Label>
-						<Input {...attrs} bind:value={$editUserFormData.bio} readonly={!isUserSuperAdmin} />
+						<Input {...attrs} bind:value={$editUserFormData.bio} disabled={!isUserSuperAdmin} />
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
@@ -407,7 +407,7 @@
 							{...attrs}
 							bind:files={$editUserAvatar}
 							accept={PUBLIC_ACCEPTED_IMAGE_TYPES}
-							readonly={!isUserSuperAdmin} />
+							disabled={!isUserSuperAdmin} />
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
@@ -418,7 +418,7 @@
 							{...attrs}
 							type="password"
 							bind:value={$editUserFormData.password}
-							readonly={!isUserSuperAdmin} />
+							disabled={!isUserSuperAdmin} />
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
@@ -429,7 +429,7 @@
 							{...attrs}
 							type="password"
 							bind:value={$editUserFormData.confirmPassword}
-							readonly={!isUserSuperAdmin} />
+							disabled={!isUserSuperAdmin} />
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
