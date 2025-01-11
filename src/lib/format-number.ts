@@ -42,7 +42,10 @@ export function format(
 				.toFixed(digits)
 				.replace(trailingZerosRegexp, '')
 				.concat((space ? ' ' : '') + item.symbol)
-		: num.toExponential(digits).replace(exponentialTrailingZerosRegexp, '');
+		: num
+				.toExponential(digits)
+				.replace(exponentialTrailingZerosRegexp, '')
+				.concat(space ? ' ' : '');
 }
 
 export function formatBinary(
@@ -89,5 +92,8 @@ export function formatBinary(
 				.toFixed(digits)
 				.replace(trailingZerosRegexp, '')
 				.concat((space ? ' ' : '') + item.symbol)
-		: num.toExponential(digits).replace(exponentialTrailingZerosRegexp, '');
+		: num
+				.toExponential(digits)
+				.replace(exponentialTrailingZerosRegexp, '')
+				.concat(space ? ' ' : '');
 }
