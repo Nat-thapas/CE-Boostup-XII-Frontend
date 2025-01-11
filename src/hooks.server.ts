@@ -8,7 +8,7 @@ import { parseCookies } from '$lib/parse-cookies';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const cookie = event.request.headers.get('cookie');
-	const token = cookie ? parseCookies(cookie).token ?? '' : '';
+	const token = cookie ? (parseCookies(cookie).token ?? '') : '';
 
 	let user: User | null = null;
 	event.locals.token = '';

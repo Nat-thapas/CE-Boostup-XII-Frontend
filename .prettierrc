@@ -8,7 +8,14 @@
 		"prettier-plugin-tailwindcss",
 		"@ianvs/prettier-plugin-sort-imports"
 	],
-	"overrides": [{ "files": "*.svelte", "options": { "parser": "svelte" } }],
+	"overrides": [
+		{
+			"files": "*.svelte",
+			"options": {
+				"parser": "svelte"
+			}
+		}
+	],
 	"htmlWhitespaceSensitivity": "ignore",
 	"bracketSameLine": true,
 	"importOrder": [
