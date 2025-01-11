@@ -318,14 +318,17 @@
 				<Form.Field form={editUserForm} name="displayName">
 					<Form.Control let:attrs>
 						<Form.Label>ชื่อที่จะแสดง</Form.Label>
-						<Input {...attrs} bind:value={$editUserFormData.displayName} />
+						<Input
+							{...attrs}
+							bind:value={$editUserFormData.displayName}
+							readonly={!isUserSuperAdmin} />
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
 				<Form.Field form={editUserForm} name="email">
 					<Form.Control let:attrs>
 						<Form.Label>Email</Form.Label>
-						<Input {...attrs} bind:value={$editUserFormData.email} />
+						<Input {...attrs} bind:value={$editUserFormData.email} readonly={!isUserSuperAdmin} />
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
@@ -393,7 +396,7 @@
 				<Form.Field form={editUserForm} name="bio">
 					<Form.Control let:attrs>
 						<Form.Label>Bio / status</Form.Label>
-						<Input {...attrs} bind:value={$editUserFormData.bio} />
+						<Input {...attrs} bind:value={$editUserFormData.bio} readonly={!isUserSuperAdmin} />
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
@@ -403,21 +406,30 @@
 						<FileInput
 							{...attrs}
 							bind:files={$editUserAvatar}
-							accept={PUBLIC_ACCEPTED_IMAGE_TYPES} />
+							accept={PUBLIC_ACCEPTED_IMAGE_TYPES}
+							readonly={!isUserSuperAdmin} />
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
 				<Form.Field form={editUserForm} name="password">
 					<Form.Control let:attrs>
 						<Form.Label>Password (optional)</Form.Label>
-						<Input {...attrs} type="password" bind:value={$editUserFormData.password} />
+						<Input
+							{...attrs}
+							type="password"
+							bind:value={$editUserFormData.password}
+							readonly={!isUserSuperAdmin} />
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
 				<Form.Field form={editUserForm} name="confirmPassword">
 					<Form.Control let:attrs>
 						<Form.Label>Confirm Password</Form.Label>
-						<Input {...attrs} type="password" bind:value={$editUserFormData.confirmPassword} />
+						<Input
+							{...attrs}
+							type="password"
+							bind:value={$editUserFormData.confirmPassword}
+							readonly={!isUserSuperAdmin} />
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
