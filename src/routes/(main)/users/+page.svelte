@@ -636,7 +636,7 @@
 					$editUserFormData.confirmPassword = '';
 					editUserDialogOpen = true;
 				}}
-				disabled={!isUserSuperAdmin}>
+				disabled={!isUserAdminOrHigher}>
 				<User
 					{user}
 					class="w-full rounded-lg bg-muted px-4 py-3 transition-all hover:scale-105 hover:bg-neutral-200 dark:hover:bg-neutral-700 md:hover:scale-[1.04] lg:hover:scale-[1.03] xl:hover:scale-[1.02] 2xl:hover:scale-[1.01]" />
