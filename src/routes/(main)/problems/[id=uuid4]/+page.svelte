@@ -439,7 +439,7 @@
 					class="flex h-8 items-center rounded-lg bg-muted px-3 text-sm"
 					class:bg-green={c === ResultCode.AC}
 					class:bg-gray={[ResultCode.IE, ResultCode.UE].includes(c)}
-					class:bg-yellow={[ResultCode.HNA, ResultCode.FNA].includes(c)}
+					class:bg-yellow={[ResultCode.HNA, ResultCode.FNA, ResultCode.DNA].includes(c)}
 					class:bg-red={[
 						ResultCode.WA,
 						ResultCode.RE,

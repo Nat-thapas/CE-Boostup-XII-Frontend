@@ -23,6 +23,9 @@
 	<h2>FNA - Function Not Allowed</h2>
 	<p>โค้ดที่ส่งมีการใช้ Function ที่โจทย์ข้อนั้นไม่ได้อนุญาติให้ใช้</p>
 
+	<h2>DNA - Directive Not Allowed</h2>
+	<p>โค้ดที่ส่งมีการใช้ Preprocessor Directive ที่ระบบม่ได้อนุญาติให้ใช้</p>
+
 	<h2>TLE - Time Limit Exceeded</h2>
 	<p>โค้ดที่ส่งใช้ระยะเวลาการทำงานนานเกินกว่าที่โจทย์กำหนด</p>
 
