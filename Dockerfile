@@ -21,7 +21,7 @@ RUN pnpm prune --prod
 
 FROM base AS deploy
 
-RUN apk add --update curl && rm -rf /var/cache/apk/*
+RUN apk add --update --no-cache curl
 
 WORKDIR /app
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
